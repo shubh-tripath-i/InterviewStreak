@@ -6,7 +6,7 @@ python==3.10.11
 
 1. Make sure the python version installed is 3.10.11
 2. Clone the repo.
-3. Move to the repo directory.
+3. Move to the migpt directory.
 4. Run python3 -m venv venv to create a virtual environment.
 5. Run . venv/bin/activate
 6. pip install -r requirements.txt
