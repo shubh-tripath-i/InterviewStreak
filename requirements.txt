@@ -1,2 +1,6 @@
 django==4.2.4
 mysqlclient==2.2.0
+langchain==0.0.267
+openai==0.27.8
+#chromadb==0.4.2
+pymilvus==2.2.15

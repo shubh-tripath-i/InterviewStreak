@@ -1,0 +1,38 @@
+{% load static %}
+<html>
+    <head>
+        <link href="{% static 'migpt/css/main.css' %}" rel="stylesheet">
+        <link href="{% static 'migpt/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="{% static 'migpt/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
+        <script src="{% static 'migpt/js/main.js' %}"></script>
+    </head>
+    <body>
+        <section class="navbar-section">
+            <div class="navbar navbar-container">
+                <div class="navbar-brand">
+                    MIGPT
+                </div>
+                <ul class="navbar-right">
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">For Business</a></li>
+                    <!-- <li><a href="#"><i class="fa fa-bell"></i></a></li> -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </a>
+                        <ul class="dropdown-menu nav-dropdown" aria-labelledby="navbarDropdown">
+                          <li><a class="dropdown-item" href="#">Log Out</a></li>
+                          <li><a class="dropdown-item" href="#">Another action</a></li>
+                        </ul>
+                      </li>
+                    <li>
+                        <a class="sign-in-button" href="/accounts/login">Sign In</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </body>
+</html>

@@ -5,5 +5,6 @@ app_name = 'migpt'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('call_llm/',views.call_llm,name="call_llm")
+    path('call_llm/', views.call_llm, name="call_llm"),
+    path('accounts/signup/', views.signup, name='signup'),
 ]
