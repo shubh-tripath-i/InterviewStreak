@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from migpt import models
 
 
 class SignUpForm(UserCreationForm):
@@ -16,3 +17,11 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = models.UserProfile
+        fields = ('intro', 'location', 'sex', 'dob', 'current_job_role', 'current_company',
+                  'highest_degree', 'linkedin_profile_url', 'github_profile_url'
+                  )

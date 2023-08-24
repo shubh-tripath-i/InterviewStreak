@@ -28,9 +28,21 @@
                           <li><a class="dropdown-item" href="#">Another action</a></li>
                         </ul>
                       </li>
-                    <li>
-                        <a class="sign-in-button" href="/accounts/login">Sign In</a>
-                    </li>
+                        {% if not user.is_authenticated %}
+                            <li>
+                                <a class="sign-in-button" href="{% url 'login' %}">Sign In</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a class="sign-in-button" href="{% url 'migpt:view_profile' %}">Profile</a>
+                            </li>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'logout' %}">Logout</a>
+                        </li>
+                        {% endif %}
                 </ul>
             </div>
         </section>

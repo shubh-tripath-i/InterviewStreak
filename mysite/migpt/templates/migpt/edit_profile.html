@@ -1,0 +1,9 @@
+{% include "migpt/base.html" %}
+<div class="login-form">
+    <h1>Register</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form }}                    
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
