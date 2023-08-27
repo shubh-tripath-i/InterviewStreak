@@ -4,3 +4,4 @@ langchain==0.0.267
 openai==0.27.8
 #chromadb==0.4.2
 pymilvus==2.2.15
+django-utils-six==2.0

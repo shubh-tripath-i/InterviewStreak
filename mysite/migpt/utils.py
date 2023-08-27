@@ -10,8 +10,10 @@ from langchain.prompts import (
     HumanMessagePromptTemplate
 )
 
+
 def feed_data():
     pass
+
 
 def make_chain():
     model = ChatOpenAI(
@@ -19,19 +21,22 @@ def make_chain():
         temperature="0",
     )
 
-    system_template=""""""
+    system_template = """You are an interviewer. You are conducting an interview for role of {job_role}
+ for company {company_name}. Generate {number_of_questions} questions regarding it to test if the
+ candidate is a valid fit. {question_generation_instructions} Use the following questions asked in
+ the past to generate new questions.\n_______________\n{context}"""
 
-    prompt=SystemMessagePromptTemplate(
-        prompt=PromptTemplate(
-        input_variables=[], 
-        template=system_template, template_format='f-string',validate_template=True
-        ), additional_kwargs={}
-    )
+    prompt = SystemMessagePromptTemplate(
+            prompt=PromptTemplate(
+                input_variables=[],
+                template=system_template, template_format='f-string', validate_template=True
+            ), additional_kwargs={}
+        )
 
-    vector_db = Milvus.from_documents(
+    vector_db = Milvus(
         collection_name="interview-data",
-        embedding_function = OpenAIEmbeddings(),
-        #connection_args={"host": "127.0.0.1", "port": "19530"},
+        embedding_function=OpenAIEmbeddings(),
+        # connection_args={"host": "127.0.0.1", "port": "19530"},
     )
 
     chain = ConversationalRetrievalChain.from_llm(
