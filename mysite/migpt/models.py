@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
+from datetime import timedelta
 
 
 class UserProfile(models.Model):
@@ -54,8 +56,66 @@ class UserJobSearch(models.Model):
     looking_for_freelancing = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    work_preference = models.CharField(max_length=15, null=True,
+    work_preference = models.CharField(max_length=6, null=True,
                                        blank=True, choices=choices_for_work_preference)
     expected_salary = models.PositiveIntegerField(default=0)
     out_of_country = models.BooleanField(default=False)
 
+
+class UserInterview(models.Model):
+    choices_for_difficulty = (
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard')
+    )
+
+    choices_for_question_type = (
+        ('coding', 'Coding'),
+        ('theory', 'Theory'),
+        ('behavioural', 'Behavioural'),
+        ('puzzle', 'Puzzle'),
+        ('design', 'Design')
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.PositiveIntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    review = models.CharField(max_length=1024)
+    company = models.CharField(max_length=50, null=True, blank=True)
+    job_role = models.CharField(max_length=50)
+    interview_round = models.PositiveIntegerField(default=1,
+                                                  validators=[MinValueValidator(1),
+                                                              MaxValueValidator(10)],
+                                                  null=True, blank=True)
+    job_description = models.CharField(max_length=400, null=True, blank=True)
+    subject = models.CharField(max_length=40, null=True, blank=True)
+    topic = models.CharField(max_length=40, null=True, blank=True)
+    tools = models.CharField(max_length=500, null=True, blank=True,
+                             help_text="Put a comma after each tool")
+    difficulty_level = models.CharField(max_length=6, null=True,
+                                        blank=True, default="medium", choices=choices_for_difficulty)
+    question_type = models.CharField(max_length=12, null=True,
+                                     blank=True, choices=choices_for_question_type)
+    user_instructions = models.TextField(null=True, blank=True,)  # To get custom user instructions
+    tags = models.CharField(max_length=500, null=True, blank=True,
+                            help_text="Put a comma after each tag")
+    duration = models.DurationField(default=timedelta(minutes=30), null=True, blank=True)
+    is_complete = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # recording =
+
+
+class UserQuestionAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    session = models.ForeignKey(UserInterview, on_delete=models.CASCADE)
+    question = models.TextField()
+    answer = models.TextField(null=True, blank=True)
+    score = models.PositiveIntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    is_asked = models.BooleanField(default=False)
+    review = models.CharField(max_length=512, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

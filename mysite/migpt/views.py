@@ -1,8 +1,7 @@
 from django.http import JsonResponse
 from migpt import utils
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from .forms import SignUpForm, UserProfileForm
+from .forms import SignUpForm, UserProfileForm, UserInterviewForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from migpt import models
@@ -13,33 +12,6 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.http import HttpResponse
-
-def index(request):
-    context = {
-    }
-    return render(request, 'migpt/index.html', context)
-
-
-@login_required
-def view_profile(request):
-    user = User.objects.filter(id=request.user.id)[0]
-    context = {"name": user.first_name + user.last_name
-               }
-    return render(request, 'migpt/view_profile.html', context)
-
-
-@login_required
-def update_profile(request):
-    userprofile = models.UserProfile.objects.filter(user=request.user)[0]
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=userprofile)
-        if form.is_valid():
-            print("is valid called")
-            form.save()
-            return redirect("migpt:update_profile")
-    else:
-        form = UserProfileForm(instance=userprofile)
-    return render(request, 'migpt/edit_profile.html', {'form': form})
 
 
 def signup(request):
@@ -62,7 +34,7 @@ def signup(request):
                         mail_subject, message, to=[to_email]
             )
             print(message)
-            #email.send()
+            # email.send()
             return HttpResponse('Please confirm your email address to complete the registration')
     else:
         form = SignUpForm()
@@ -83,10 +55,94 @@ def verify_email(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-def call_llm(request):
-    chain = utils.make_chain()
+def index(request):
+    context = {
+    }
+    return render(request, 'migpt/index.html', context)
+
+
+@login_required
+def view_profile(request):
+    user = User.objects.get(id=request.user.id)
+    context = {"name": user.first_name + user.last_name
+               }
+    return render(request, 'migpt/view_profile.html', context)
+
+
+@login_required
+def update_profile(request):
+    userprofile = models.UserProfile.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=userprofile)
+        if form.is_valid():
+            print("is valid called")
+            form.save()
+            return redirect("migpt:update_profile")
+    else:
+        form = UserProfileForm(instance=userprofile)
+    return render(request, 'migpt/edit_profile.html', {'form': form})
+
+
+@login_required
+def create_interview_session(request):
+    if request.method == 'POST':
+        form = UserInterviewForm(request.POST)
+        if form.is_valid():
+            interview = form.save(commit=False)
+            interview.user = request.user
+            interview.is_complete = False
+            interview = form.save()
+            request.session['interview_id'] = interview.id
+            return redirect("migpt:start_interview")
+    else:
+        form = UserInterviewForm()
+    return render(request, 'migpt/create_interview_session.html', {'form': form})
+
+
+@login_required
+def start_interview(request):
+    interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+    questions = utils.generate_questions(interview)
+    for question in questions:
+        models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
+                                                 session=interview)
+    context = {'question': questions[0]}
+    return render(request, 'migpt/interview_interface.html', context)
+
+
+def get_question(request):
+    interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+    question = models.UserQuestionAnswer.objects.filter(user=interview.user,
+                                                        session=interview, is_asked=False).first()
+    if not question:
+        # Redirect to success page or something
+        interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+        interview.is_complete = True
+        # Fill score and review
+        interview.save()
+        return redirect("migpt:index")
+    request.session['question_id'] = question.id
     data = {
         'success': True,
-        'message': "Hello there!"
+        'question': question.question
     }
     return JsonResponse(data)
+
+
+def save_answer(request):
+    if request.method == 'POST':
+        answer_text = request.POST.get('answer')
+        interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+        if interview.is_complete:
+            return JsonResponse({'success': False, 'error': 'Interview Already Complete'})
+        if answer_text:
+            question = models.UserQuestionAnswer.objects.get(id=request.session.get('question_id'))
+            question.answer = answer_text
+            question.is_asked = True
+            # Generate review and score
+            question.save()
+            interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'error': 'Answer is missing'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
