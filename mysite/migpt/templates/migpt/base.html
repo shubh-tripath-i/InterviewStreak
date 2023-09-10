@@ -16,8 +16,8 @@
                 </div>
                 <ul class="navbar-right">
                     <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">For Business</a></li>
+                    <!-- <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">For Business</a></li> -->
                     <!-- <li><a href="#"><i class="fa fa-bell"></i></a></li> -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -35,6 +35,12 @@
                         {% else %}
                             <li>
                                 <a class="sign-in-button" href="{% url 'migpt:view_profile' %}">Profile</a>
+                            </li>
+                            <li>
+                                <a class="sign-in-button" href="{% url 'migpt:update_profile' %}">Edit Profile</a>
+                            </li>
+                            <li>
+                                <a class="sign-in-button" href="{% url 'migpt:create_interview_session' %}">Start Interview</a>
                             </li>
                         {% endif %}
 
