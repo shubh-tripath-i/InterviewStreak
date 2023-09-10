@@ -6,6 +6,16 @@ $(document).ready(function () {
         $("#chat-box").append(messageDiv);
     }
 
+    const messageInput = document.getElementById("message-input");
+    const sendButton = document.getElementById("send-button");
+
+    messageInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevents the default behavior of the Enter key (e.g., new line in a textarea)
+            sendButton.click(); // Trigger a click event on the send button
+        }
+    });
+
     // Function to get the next question from Django
     function getNextQuestion() {
         $.ajax({
@@ -17,6 +27,7 @@ $(document).ready(function () {
                     addMessage(data.question, true);
                 } else {
                     addMessage("No more questions. Chat ended.", true);
+                    //window.location.href = "/"
                 }
             },
             error: function (error) {

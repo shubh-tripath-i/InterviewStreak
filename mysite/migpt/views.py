@@ -85,15 +85,22 @@ def update_profile(request):
 
 @login_required
 def create_interview_session(request):
+    # TODO: Fix number of tokens required on basis of time duration and other factors
+    # Decide when to reduce that tokens in userprofile
     if request.method == 'POST':
         form = UserInterviewForm(request.POST)
         if form.is_valid():
             interview = form.save(commit=False)
             interview.user = request.user
-            interview.is_complete = False
-            interview = form.save()
-            request.session['interview_id'] = interview.id
-            return redirect("migpt:start_interview")
+            userprofile = models.UserProfile.objects.get(user=request.user)
+            if userprofile.token > 0:
+                interview.is_complete = False
+                interview = form.save()
+                request.session['interview_id'] = interview.id
+                return redirect("migpt:start_interview")
+            else:
+                # TODO: Redirect to pricing page
+                return HttpResponse("Insufficient credits")
     else:
         form = UserInterviewForm()
     return render(request, 'migpt/create_interview_session.html', {'form': form})
@@ -102,25 +109,34 @@ def create_interview_session(request):
 @login_required
 def start_interview(request):
     interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
-    questions = utils.generate_questions(interview)
-    for question in questions:
-        models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
-                                                 session=interview)
-    context = {'question': questions[0]}
-    return render(request, 'migpt/interview_interface.html', context)
+    if not interview.is_complete:
+        questions = utils.generate_questions(interview)
+        for question in questions:
+            models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
+                                                    session=interview)
+        context = {'question': questions[0]}
+        return render(request, 'migpt/interview_interface.html', context)
+    else:
+        return HttpResponse("Interview Over")
+
+
+@login_required
+def end_interview(request):
+    utils.complete_interview(request.session.get('interview_id'))
+    return redirect("migpt:index")
 
 
 def get_question(request):
-    interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+    interview_id = request.session.get('interview_id')
+    interview = models.UserInterview.objects.get(id=interview_id)
     question = models.UserQuestionAnswer.objects.filter(user=interview.user,
                                                         session=interview, is_asked=False).first()
     if not question:
-        # Redirect to success page or something
-        interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
-        interview.is_complete = True
-        # Fill score and review
-        interview.save()
-        return redirect("migpt:index")
+        utils.complete_interview(interview_id)
+        data = {
+            'success': True,
+        }
+        return JsonResponse(data)
     request.session['question_id'] = question.id
     data = {
         'success': True,
@@ -132,16 +148,15 @@ def get_question(request):
 def save_answer(request):
     if request.method == 'POST':
         answer_text = request.POST.get('answer')
-        interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
+        interview_id = request.session.get('interview_id')
+        interview = models.UserInterview.objects.get(id=interview_id)
         if interview.is_complete:
             return JsonResponse({'success': False, 'error': 'Interview Already Complete'})
         if answer_text:
             question = models.UserQuestionAnswer.objects.get(id=request.session.get('question_id'))
             question.answer = answer_text
             question.is_asked = True
-            # Generate review and score
             question.save()
-            interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'error': 'Answer is missing'})
