@@ -106,7 +106,7 @@ def prompt_generator(interview, type):
 
     if type == "question_generation":
         
-        template += "Generate {number_of_questions} questions regarding it to test if the candidate is a valid fit."
+        template += "Generate questions regarding it to test if the candidate is a valid fit. Generate questions in a sequence like a real interview happens starting with greeting candidate and then casually going into domain knowledge."
 
         if interview.subject:
             template += f"You need to access the candidate's skill on {interview.subject}. "

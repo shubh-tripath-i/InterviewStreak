@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from migpt import utils
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, UserProfileForm, UserInterviewForm
@@ -11,7 +11,23 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.http import HttpResponse
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+
+
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            # Email doesn't exist in the database; show an error message
+            return HttpResponse('Email does not exist')
+
+        return super().form_valid(form)
 
 
 def signup(request):
@@ -64,7 +80,9 @@ def index(request):
 @login_required
 def view_profile(request):
     user = User.objects.get(id=request.user.id)
-    context = {"name": user.first_name + user.last_name
+    interviews = models.UserInterview.objects.filter(user=user).order_by('-created_at')
+    context = {"name": user.first_name + user.last_name,
+               "interviews": interviews
                }
     return render(request, 'migpt/view_profile.html', context)
 
