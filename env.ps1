@@ -1,0 +1,12 @@
+set DJANGO_MYSQL_DB='migpt'
+set DJANGO_MYSQL_USER='root'
+set MYSQL_DB_PASSWORD='Vikas28124@'
+set DJANGO_MYSQL_HOST=localhost
+set DJANGO_MYSQL_PORT=3306
+set DJANGO_STATIC_URL='/static/'
+set DJANGO_STATIC_ROOT='static'
+set DJANGO_CXL_MEDIA_URL='/media/'
+set DJANGO_CXL_MEDIA_ROOT='media'
+set EMAIL_HOST_USER=''
+set EMAIL_HOST_PASS=''
+
