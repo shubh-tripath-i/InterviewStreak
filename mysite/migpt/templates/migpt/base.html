@@ -1,25 +1,32 @@
 {% load static %}
 <html>
     <head>
+        <!-- Basic -->
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- Mobile Metas -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <!-- Site Metas -->
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
         <title>MIGPT</title>
-        <link href="{% static 'migpt/css/main.css' %}" rel="stylesheet">
+        <link href="{% static 'migpt/css/styles.css' %}" rel="stylesheet">
         <link href="{% static 'migpt/css/bootstrap.min.css' %}" rel="stylesheet">
         <!-- slider stylesheet -->
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css" />
         <!-- bootstrap core css -->
+        <link href="{% static 'migpt/css/bootstrap.css' %}" type="text/css" rel="stylesheet">
          <!-- fonts style -->
         <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
-        <!-- Custom styles for this template -->
-        <link href="migpt/css/style.css" rel="stylesheet" />
         <!-- responsive style -->
-        <link href="migpt/css/responsive.css" rel="stylesheet" />
+        <link href="{% static 'migpt/css/responsive.css' %}" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="migpt/css/bootstrap.css" />
-        <script src="{% static 'migpt/js/bootstrap.bundle.min.js' %}"></script>
-        <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
-        <script src="{% static 'migpt/js/main.js' %}"></script>
+        <script src="{% static 'migpt/js/bootstrap.js' %}"></script>
+        <script src="{% static 'migpt/js/jquery-3.4.1.min.js' %}"></script>
+        
     </head>
     <body>
-        <div class="hero_area">
             <header class="header_section">
                 <div class="container">
                     <nav class="navbar navbar-expand-lg custom_nav-container ">
@@ -52,14 +59,11 @@
                                 </li>
                                 <li class="nav-item">
                                 <a class="nav-link" href="login.html">login/signup </a>
-                                </li>
                             </ul>
                             </div>
                         </div>
                     </nav>
                 </div>
-                </header>
-                </ul>
-        </div>
+            </header>
     </body>
 </html>
