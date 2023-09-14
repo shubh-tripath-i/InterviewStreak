@@ -1,50 +1,65 @@
 {% load static %}
 <html>
     <head>
+        <title>MIGPT</title>
         <link href="{% static 'migpt/css/main.css' %}" rel="stylesheet">
         <link href="{% static 'migpt/css/bootstrap.min.css' %}" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- slider stylesheet -->
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css" />
+        <!-- bootstrap core css -->
+         <!-- fonts style -->
+        <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="migpt/css/style.css" rel="stylesheet" />
+        <!-- responsive style -->
+        <link href="migpt/css/responsive.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="migpt/css/bootstrap.css" />
         <script src="{% static 'migpt/js/bootstrap.bundle.min.js' %}"></script>
         <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
         <script src="{% static 'migpt/js/main.js' %}"></script>
     </head>
     <body>
-        <section class="navbar-section">
-            <div class="navbar navbar-container">
-                <div class="navbar-brand">
-                    MIGPT
-                </div>
-                <ul class="navbar-right">
-                    <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">For Business</a></li>
-                    <!-- <li><a href="#"><i class="fa fa-bell"></i></a></li> -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-user" aria-hidden="true"></i>
+        <div class="hero_area">
+            <header class="header_section">
+                <div class="container">
+                    <nav class="navbar navbar-expand-lg custom_nav-container ">
+                        <a class="navbar-brand" href="index.html">
+                            <img src="migpt/images/ai.png" alt="">
+                            <span>
+                            MIGPT
+                            </span>
                         </a>
-                        <ul class="dropdown-menu nav-dropdown" aria-labelledby="navbarDropdown">
-                          <li><a class="dropdown-item" href="#">Log Out</a></li>
-                          <li><a class="dropdown-item" href="#">Another action</a></li>
-                        </ul>
-                      </li>
-                        {% if not user.is_authenticated %}
-                            <li>
-                                <a class="sign-in-button" href="{% url 'login' %}">Sign In</a>
-                            </li>
-                        {% else %}
-                            <li>
-                                <a class="sign-in-button" href="{% url 'migpt:view_profile' %}">Profile</a>
-                            </li>
-                        {% endif %}
-
-                        {% if user.is_authenticated %}
-                        <li>
-                            <a href="{% url 'logout' %}">Logout</a>
-                        </li>
-                        {% endif %}
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="s-1"> </span>
+                            <span class="s-2"> </span>
+                            <span class="s-3"> </span>
+                        </button>
+                
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
+                            <ul class="navbar-nav  ">
+                                <li class="nav-item active">
+                                <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item">
+                                <a class="nav-link" href="Product.html"> Product</a>
+                                </li>
+                                <li class="nav-item">
+                                <a class="nav-link" href="about.html"> About US </a>
+                                </li>
+                                <li class="nav-item">
+                                <a class="nav-link" href="contact.html">Contact </a>
+                                </li>
+                                <li class="nav-item">
+                                <a class="nav-link" href="login.html">login/signup </a>
+                                </li>
+                            </ul>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+                </header>
                 </ul>
-            </div>
-        </section>
+        </div>
     </body>
 </html>
