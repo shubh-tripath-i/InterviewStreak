@@ -36,9 +36,9 @@ def signup(request):
             print(message)
             # email.send()
             return HttpResponse('Please confirm your email address to complete the registration')
-    else:
-        form = SignUpForm()
-    return render(request, 'migpt/signup.html', {'form': form})
+    # else:
+        # form = SignUpForm()
+    return render(request, 'migpt/signup.html',{'form': form})
 
 
 def verify_email(request, uidb64, token):
