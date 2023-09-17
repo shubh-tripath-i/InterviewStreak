@@ -10,16 +10,25 @@
             
         </form>
     </div> -->
-    <div class="login-form">
-        <h1>Login</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form }}                    
-            <button class="btn btn-primary" type="submit">Login</button>
-        </form>
-        <div>
-            <a href="/accounts/signup">Create account</a>
+    <div class="form-container">
+        <h2>Login</h2>
+            <form action="login.php" method="POST">
+                {% csrf_token %}
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" name="loginUsername" required>
+
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
+
+                <button type="submit">Login</button>
+            </form>
+            <span>
+              New User?
+            </span>
+            <div class="heading_container">
+              <a href="signin.html"><h6>Sign UP</h6>
+              </a>
+            </div>
         </div>
-    </div>
 </body>
 </html>
