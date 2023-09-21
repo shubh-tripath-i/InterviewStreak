@@ -3,12 +3,15 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
+from typing import List
 from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.vectorstores import Milvus
 from langchain.output_parsers import CommaSeparatedListOutputParser
+from langchain.output_parsers.list import ListOutputParser
 from langchain.llms.fake import FakeListLLM
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field, validator
+import ast
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     PromptTemplate,
@@ -26,11 +29,28 @@ class AnswerReview(BaseModel):
 
 class InterviewReview(BaseModel):
     score: int = Field(description="Score of candidate's interview")
-    review: str = Field(description="Review of the interview.")
+    review: str = Field(description="Review of the candidate.")
     strong_points: str = Field(description="Strong points, domains of the candidate.")
     weak_points: str = Field(description="Weak points, domains of the candidate.")
     improvements: str = Field(description="Improvements in the candidate.")
     is_selected: bool = Field(description="Will you select the candidate or not?")
+    reason_selection: str = Field(description="Reason of why you selected or rejected the candidate.")
+
+class OutputParserMalfunctionException(Exception):
+    pass
+
+class OutputParser(ListOutputParser):
+    def get_format_instructions(self) -> str:
+        return (
+            "Your output strictly should be a list of questions enclosed in square brackets separated by commas and each question enclosed in double inverted commas, so that they could be parsed to a list of questions easily, "
+            "eg: [\"question1\", \"question2\", \"question3\", \"question4\"] "
+        )
+    def parse(self, text: str) -> List[str]:
+        """Parse the output of an LLM call."""
+        try:
+            return ast.literal_eval(text)
+        except:
+            raise OutputParserMalfunctionException
 
 
 def complete_interview(interview_id):
@@ -41,16 +61,14 @@ def complete_interview(interview_id):
     userprofile.token -= 1
     userprofile.save()
     # We can charge extra to get answer level review as we'll have to make several api costs
-    generate_answer_review(interview)
-    generate_review(interview)
+    #generate_review(interview)
+    #generate_answer_review(interview)
 
 
 def generate_answer_review(interview):
     prompt = prompt_generator(interview, "answer_review_generation")
     output_parser = PydanticOutputParser(pydantic_object=AnswerReview)
-    responses = ['{"score": "8", "review": "Good Answer",' +
-                 '"improvements": "Improvements are", "perfect_answer":"Perfect answer is"}']
-    chain = make_review_generation_chain(prompt, output_parser, responses)
+    chain = make_review_generation_chain(prompt, output_parser)
     questions = models.UserQuestionAnswer.objects.filter(user=interview.user, session=interview,
                                                          is_asked=True, answer__isnull=False)
     for question in questions:
@@ -72,19 +90,16 @@ def generate_review(interview):
     question_answer = ""
     for question in questions:
         question_answer += f"Question: {question.question}\nAnswer: {question.answer}\n\n"
-    responses = ['{"score": "8", "review": "Medium Interview",' +
-                 '"strong_points": "Strong Points", "weak_points": "Weak points",' +
-                 '"improvements": "Improvements are", "is_selected":"False"}']
-    chain = make_review_generation_chain(prompt, output_parser, responses)
+    chain = make_review_generation_chain(prompt, output_parser)
     response = chain({'question_answer': question_answer,
                       'format_instructions': output_parser.get_format_instructions()})
-
     interview.score = response['text'].score
     interview.review = response['text'].review
     interview.strong_points = response['text'].strong_points
     interview.weak_points = response['text'].weak_points
     interview.improvements = response['text'].improvements
     interview.is_selected = response['text'].is_selected
+    interview.reason_selection = response['text'].reason_selection
     interview.save()
 
 def feed_data():
@@ -97,7 +112,7 @@ def prompt_generator(interview, type):
     if interview.company:
         template += f"You work for {interview.company}. "
 
-    template += f"You are hiring for role of {interview.job_role}. "
+    template += f"You are hiring for the role of {interview.job_role}. "
 
     if interview.job_description:
         template += f"The job description is: {interview.job_description}.\n"
@@ -106,7 +121,10 @@ def prompt_generator(interview, type):
 
     if type == "question_generation":
         
-        template += "Generate questions regarding it to test if the candidate is a valid fit. Generate questions in a sequence like a real interview happens starting with greeting candidate and then casually going into domain knowledge."
+        template += "Generate questions regarding it to test if the candidate is a valid fit.\
+ Generate questions in a sequence like a real interview happens starting with greeting\
+ candidate, introduction and then casually going into domain knowledge starting with easy\
+ questions and then slightly raising the difficulty level of the interview. "
 
         if interview.subject:
             template += f"You need to access the candidate's skill on {interview.subject}. "
@@ -120,32 +138,57 @@ def prompt_generator(interview, type):
         if interview.difficulty_level:
             template += f"The difficulty level of questions should be {interview.difficulty_level}. "
         else:
-            template += "You should generate questions for every difficulty level, i.e., easy, medium and hard.  "
+            template += "Ensure questions cater to a range of difficulty levels, encompassing both straightforward and challenging aspects. "
 
         if interview.user_instructions:
             template += f"Further instructions are: {interview.user_instructions}."
 
         template += "Include a variety of questions so both theoretical and practical\
- knowledge of the candidate can be checked. The questions asked should be in a sequence like first ask all questions\
- belonging to the same domain and then jump to the next domain and do the same to judge the candidate\
- topic and domain wise.\n{format_instructions}"
+ knowledge of the candidate can be checked. "
 
+        template += "Include scenario-based and real-world industry questions. "
+
+        template += "Organize the questions in a sequential manner,\
+ where you first ask questions related to a specific domain, topic or field before moving on\
+ to the next, allowing for a comprehensive evaluation of the candidate's expertise in each\
+ topic and domain. "
+
+        template += "You can not generate more than {number_of_questions} questions.\
+ You have to test the candidate's overall  knowledge by it and so frame the questions accordingly. "
+        template += "\n\n{format_instructions}"
         prompt = PromptTemplate.from_template(template)
         return prompt
 
     if type == "answer_review_generation":
-        template += "You are given question and candidate's answer. You need to generate score of the answer\
- in a range of 1 to 10 denoting how good the user's answer is where higher score denotes better answer. You also need to generate review of the answer highlighting overall quality of the answer and how an interviewer would react to such answer and where it was good and where it was bad. You also need to generate all improvements including minute details that need to be done to make candidate's answer better. Also generate a perfect answer for the question.\n{format_instructions}"
+        template += "You are given a question and the candidate's answer.\
+ Your task is to do a detailed analysis of the answer. You need to generate\
+ score of the answer in a range of 0 to 10 denoting how good the candidate's answer is, where\
+ higher score denotes better answer. You also need to generate a detailed review of the answer\
+ highlighting overall quality of the answer including where it was good and where it was bad.\
+ You also need to generate all improvements\
+ including minute details that need to be done to make candidate's answer better.\
+ Also generate a perfect answer of the question.\
+ Note that the output will be provided to the candidate, so use direct speech as you are\
+ advising the candidate. So, use 'you' to refer to the candidate.\n"
 
-        human_template = "Question: {question}\nAnswer: {answer}"
+        human_template = "Question: {question}\nAnswer: {answer}\n\n{format_instructions}"
         prompt = ChatPromptTemplate.from_messages(
             [SystemMessagePromptTemplate.from_template(template),
              HumanMessagePromptTemplate.from_template(human_template)]
         )
         return prompt
     if type == "review_generation":
-        template += "You are given all the questions asked and candidate's answer to it. You need to generate review of the interview. Also, generate score of the candidate ranging from 1 to 10 where higher score means better the candidate. Also generate, strong and weak points/domains/fields of the candidate. You also need to generate all improvements including minute details that need to be done to make candidate better. Also tell if you will select the candidate or not.\n{format_instructions}"
-        human_template = "{question_answer}"
+        template += "You are given all the questions asked during the interview and candidate's answer to it.\
+ Your task is to do a detailed analysis of the candidate on the basis of it. Generate a detailed\
+ review of the candidate including where he was good and where he was bad. Also, generate score of the candidate ranging\
+ from 0 to 10 where higher the score means better the candidate. Also generate, strong and weak\
+ points/domains/fields of the candidate in a detailed and formatted manner.\
+ You also need to generate all improvements including\
+ minute details that can to be done to make the candidate a better fit. Also tell if you will select\
+ the candidate or not with the detailed reason of why if selected and why not if not selected.\
+ The output will be provided to the candidate, so use direct speech as you are\
+ advising the candidate. So, use 'you' to refer to the candidate.\n"
+        human_template = "{question_answer}\n{format_instructions}"
         prompt = ChatPromptTemplate.from_messages(
             [SystemMessagePromptTemplate.from_template(template),
              HumanMessagePromptTemplate.from_template(human_template)]
@@ -154,28 +197,52 @@ def prompt_generator(interview, type):
 
 def generate_questions(interview):
     prompt = prompt_generator(interview, "question_generation")
-    output_parser = CommaSeparatedListOutputParser()
+    output_parser = OutputParser()
     format_instructions = output_parser.get_format_instructions()
     chain = make_question_generation_chain(prompt, output_parser)
-    response = chain({'number_of_questions': "3",
-                      'format_instructions': format_instructions})
-    return response['text']
+    response = None
+
+    retries = 0
+    while True:
+        if retries > 4:
+            print("Maximum retries passed")
+            break
+        try:
+            response = chain({'number_of_questions': "5",
+                              'format_instructions': format_instructions})
+            break
+        except OutputParserMalfunctionException:
+            print("Outputparser exception occures")
+            retries += 1
+            continue
+        except Exception as e:
+            print(f"Exception occurred during response generation: {e}")
+            break
+
+    if response:
+        return response['text']
+    else:
+        # Handle what to show to users
+        print("No response generated")
 
 
 def make_question_generation_chain(prompt, output_parser):
     model = OpenAI(
         model_name="gpt-3.5-turbo",
-        temperature="0",
+        temperature=0.6,
+        verbose=True
     )
-    responses = ["Tell me about yourself, Where did you studied, What is DSA?,"]
-    llm = FakeListLLM(responses=responses)
-    chain = LLMChain(llm=llm, prompt=prompt, output_parser=output_parser, verbose=True)
+    chain = LLMChain(llm=model, output_parser=output_parser, prompt=prompt, verbose=True)
     return chain
 
 
-def make_review_generation_chain(prompt, output_parser, responses):
-    llm = FakeListLLM(responses=responses)
-    chain = LLMChain(llm=llm, prompt=prompt, output_parser=output_parser, verbose=True)
+def make_review_generation_chain(prompt, output_parser):
+    model = OpenAI(
+        model_name="gpt-3.5-turbo",
+        temperature=0.2,
+        verbose=True
+    )
+    chain = LLMChain(llm=model, prompt=prompt, output_parser=output_parser, verbose=True)
     return chain
 
 

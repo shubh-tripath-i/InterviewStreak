@@ -1,25 +1,14 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block head_title %}MIGPT{% endblock %}</title>
-    
-        <link rel="stylesheet" href="{% static 'migpt/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'migpt/css/main.css' %}">
-    </head>
-    <body>
-        {% include "migpt/base.html" %}
-        <h1>Home</h1>
-        <script>
-            var JS_DATA = {
-                'csrf_token' : '{{ csrf_token }}',
-            }
-        </script>
-        <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
-        <script src="{% static 'migpt/js/bootstrap.bundle.min.js' %}"></script>
-        <script src="{% static 'migpt/js/main.js' %}"></script>
-        {% block extra_js %}{% endblock %}
-    </body>
-</html>
+
+{% include "migpt/base.html" %}
+<h1>Home</h1>
+
+
+
+<script>
+    var JS_DATA = {
+        'csrf_token' : '{{ csrf_token }}',
+    }
+</script>
+
+{% block extra_js %}{% endblock %}

@@ -88,6 +88,7 @@ class UserInterview(models.Model):
     weak_points = models.TextField(max_length=1024, null=True, blank=True)
     improvements = models.TextField(max_length=1024, null=True, blank=True)
     is_selected = models.BooleanField(null=True)
+    reason_selection = models.TextField(max_length=1024, null=True, blank=True)
     company = models.CharField(max_length=50, null=True, blank=True)
     job_role = models.CharField(max_length=50)
     interview_round = models.PositiveIntegerField(default=1,

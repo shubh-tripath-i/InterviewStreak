@@ -14,7 +14,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-
+import ast
 
 class CustomPasswordResetView(PasswordResetView):
     def form_valid(self, form):
@@ -129,7 +129,9 @@ def start_interview(request):
     interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
     if not interview.is_complete:
         questions = utils.generate_questions(interview)
+        print(len(questions), type(questions))
         for question in questions:
+            print(question,type(question))
             models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
                                                     session=interview)
         context = {'question': questions[0]}
