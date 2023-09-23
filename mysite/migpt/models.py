@@ -83,7 +83,7 @@ class UserInterview(models.Model):
     score = models.PositiveIntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    review = models.TextField(max_length=1024)
+    review = models.TextField(max_length=1024, null=True, blank=True)
     strong_points = models.TextField(max_length=1024, null=True, blank=True)
     weak_points = models.TextField(max_length=1024, null=True, blank=True)
     improvements = models.TextField(max_length=1024, null=True, blank=True)
