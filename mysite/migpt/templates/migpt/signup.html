@@ -1,24 +1,22 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
-    <title>Login</title>
+    <title>SignUP</title>
+    
 </head>
 <body>
+    <div class="hero_area">
     {% include "migpt/base.html" %}
-    <div class="login-form">
-        <!-- <h3>Login</h3> -->
-        <form>
-            
-        </form>
-    </div>
-    <div class="login-form">
-        <h1>Register</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form }}                    
+        <div class="signup-container">
+            <h2>Sign UP</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form }}                    
             <button class="btn btn-primary" type="submit">Register</button>
-        </form>
-        <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>
+            </form>
+            <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>
+        </div>
     </div>
 </body>
 </html>
