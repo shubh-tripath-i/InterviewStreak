@@ -711,12 +711,12 @@ a:focus {
   justify-content: center;
   align-items: center;
 }
-
 .signup-container {
-  width: 300px;           /* Set this to your convenience */
-  height: 480px;          /* Set this to your convenience */
-  position: absolute;
-  top: 50%;
+  width: 600px;           /* Set this to your convenience */
+  height: 600px;          /* Set this to your convenience */
+  position:absolute;
+  overflow: auto;
+  top: 55%;
   left: 50%;
   transform: translate(-50%,-50%); 
   background-color: #f1eff1;
@@ -735,7 +735,7 @@ form {
 position: absolute;
 top: 50%;
 left: 50%;
-transform: translate(-65%,-80%);
+transform: translate(-65%,-60%);
 }
 label {
   margin-bottom: 10px; /* Increased label margin */
