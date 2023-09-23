@@ -133,10 +133,13 @@ LOGOUT_REDIRECT_URL = "/"
 
 # settings.py
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True  # Set to True to use TLS, set to False to not use TLS
-EMAIL_HOST = 'smtp.gmail.com'  # Your SMTP server's hostname
-EMAIL_PORT = 587  # Port number for the SMTP server
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']  # Your email address
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASS']  # Your email password or app-specific password
-EMAIL_USE_SSL = False
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / "send_mails"
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = True  # Set to True to use TLS, set to False to not use TLS
+# EMAIL_HOST = 'smtp.gmail.com'  # Your SMTP server's hostname
+# EMAIL_PORT = 587  # Port number for the SMTP server
+# EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']  # Your email address
+# EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASS']  # Your email password or app-specific password
+# EMAIL_USE_SSL = False

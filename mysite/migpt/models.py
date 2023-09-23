@@ -13,6 +13,7 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(
         User, related_name='userprofile', on_delete=models.CASCADE)
+    token = models.IntegerField(default=0)
     intro = models.CharField(max_length=200, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     sex = models.CharField(max_length=15, null=True,
@@ -70,6 +71,7 @@ class UserInterview(models.Model):
     )
 
     choices_for_question_type = (
+        ('all', 'All'),
         ('coding', 'Coding'),
         ('theory', 'Theory'),
         ('behavioural', 'Behavioural'),
@@ -81,7 +83,12 @@ class UserInterview(models.Model):
     score = models.PositiveIntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    review = models.CharField(max_length=1024)
+    review = models.TextField(max_length=1024)
+    strong_points = models.TextField(max_length=1024, null=True, blank=True)
+    weak_points = models.TextField(max_length=1024, null=True, blank=True)
+    improvements = models.TextField(max_length=1024, null=True, blank=True)
+    is_selected = models.BooleanField(null=True)
+    reason_selection = models.TextField(max_length=1024, null=True, blank=True)
     company = models.CharField(max_length=50, null=True, blank=True)
     job_role = models.CharField(max_length=50)
     interview_round = models.PositiveIntegerField(default=1,
@@ -89,13 +96,15 @@ class UserInterview(models.Model):
                                                               MaxValueValidator(10)],
                                                   null=True, blank=True)
     job_description = models.CharField(max_length=400, null=True, blank=True)
-    subject = models.CharField(max_length=40, null=True, blank=True)
-    topic = models.CharField(max_length=40, null=True, blank=True)
+    subject = models.CharField(max_length=100, null=True, blank=True,
+                               help_text="Put a comma after each subject")
+    topic = models.CharField(max_length=100, null=True, blank=True,
+                             help_text="Put a comma after each topic")
     tools = models.CharField(max_length=500, null=True, blank=True,
                              help_text="Put a comma after each tool")
     difficulty_level = models.CharField(max_length=6, null=True,
-                                        blank=True, default="medium", choices=choices_for_difficulty)
-    question_type = models.CharField(max_length=12, null=True,
+                                        blank=True, choices=choices_for_difficulty)
+    question_type = models.CharField(max_length=12, null=True, default="all",
                                      blank=True, choices=choices_for_question_type)
     user_instructions = models.TextField(null=True, blank=True,)  # To get custom user instructions
     tags = models.CharField(max_length=500, null=True, blank=True,
@@ -112,10 +121,12 @@ class UserQuestionAnswer(models.Model):
     session = models.ForeignKey(UserInterview, on_delete=models.CASCADE)
     question = models.TextField()
     answer = models.TextField(null=True, blank=True)
+    perfect_answer = models.TextField(null=True, blank=True)
     score = models.PositiveIntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     is_asked = models.BooleanField(default=False)
-    review = models.CharField(max_length=512, null=True, blank=True)
+    review = models.TextField(null=True, blank=True)
+    improvements = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

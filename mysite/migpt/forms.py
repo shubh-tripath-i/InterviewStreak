@@ -32,10 +32,12 @@ class UserProfileForm(forms.ModelForm):
         fields = ('intro', 'location', 'sex', 'dob', 'current_job_role', 'current_company',
                   'highest_degree', 'linkedin_profile_url', 'github_profile_url'
                   )
-        
+
+
 class UserInterviewForm(forms.ModelForm):
     class Meta:
         model = models.UserInterview
-        fields = ('company', 'job_role', 'interview_round', 'job_description', 'subject', 'topic',
-                  'tools', 'difficulty_level', 'question_type', #'user_instructions',
-                  'tags', 'duration')
+        fields = ('job_role',)
+        # fields = ('company', 'job_role', 'interview_round', 'job_description', 'subject', 'topic',
+        #           'tools', 'difficulty_level', 'question_type', #'user_instructions',
+        #           'tags', 'duration')
