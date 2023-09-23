@@ -21,5 +21,5 @@ urlpatterns = [
     path('accounts/password_reset/done/', PasswordResetDoneView.as_view(template_name='migpt/password_reset_done.html'), name='password_reset_done'),
     path('accounts/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='migpt/password_reset_confirm.html'), name='password_reset_confirm'),
     path('accounts/reset/done/', PasswordResetCompleteView.as_view(template_name='migpt/password_reset_complete.html'), name='password_reset_complete'),
-
+    path('display-interview-result/', views.display_result, name='display_result'),
 ]

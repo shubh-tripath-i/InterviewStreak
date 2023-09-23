@@ -110,31 +110,43 @@ def create_interview_session(request):
         if form.is_valid():
             interview = form.save(commit=False)
             interview.user = request.user
-            userprofile = models.UserProfile.objects.get(user=request.user)
-            if userprofile.token > 0:
-                interview.is_complete = False
-                interview = form.save()
-                request.session['interview_id'] = interview.id
-                return redirect("migpt:start_interview")
-            else:
-                # TODO: Redirect to pricing page
-                return HttpResponse("Insufficient credits")
+            # userprofile = models.UserProfile.objects.get(user=request.user)
+            interview.is_complete = False
+            interview = form.save()
+            request.session['interview_id'] = interview.id
+            return redirect("migpt:start_interview")
+            # if userprofile.token > 0:
+                
+            # else:
+            #     # TODO: Redirect to pricing page
+            #     return HttpResponse("Insufficient credits")
     else:
         form = UserInterviewForm()
-    return render(request, 'migpt/create_interview_session.html', {'form': form})
+        context = {
+            'form': form,
+            'interview': None
+        }
+        interview = models.UserInterview.objects.filter(user=request.user).last()
+        if interview.is_complete is False:
+            context['interview'] = interview
+            request.session['interview_id'] = interview.id
+    return render(request, 'migpt/create_interview_session.html', context)
 
 
 @login_required
 def start_interview(request):
     interview = models.UserInterview.objects.get(id=request.session.get('interview_id'))
     if not interview.is_complete:
-        questions = utils.generate_questions(interview)
-        print(len(questions), type(questions))
-        for question in questions:
-            print(question,type(question))
-            models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
-                                                    session=interview)
-        context = {'question': questions[0]}
+        # Check if questions are already there
+        questions = models.UserQuestionAnswer.objects.filter(user=interview.user,
+                                                             session=interview)
+        if not questions:
+            questions = utils.generate_questions(interview)
+            for question in questions:
+                print(question, type(question))
+                models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
+                                                        session=interview)
+        context = {}
         return render(request, 'migpt/interview_interface.html', context)
     else:
         return HttpResponse("Interview Over")
@@ -142,8 +154,25 @@ def start_interview(request):
 
 @login_required
 def end_interview(request):
-    utils.complete_interview(request.session.get('interview_id'))
-    return redirect("migpt:index")
+    interview_id = request.session.get('interview_id')
+    utils.complete_interview(interview_id)
+    url = reverse('migpt:display_result') + f'?interview={interview_id}'
+    print(url)
+    return redirect(url)
+
+
+def display_result(request):
+    interview_id = request.GET.get('interview')
+    interview = models.UserInterview.objects.get(id=interview_id)
+    if request.user != interview.user:
+        return HttpResponse("Invalid Request")
+    questions = models.UserQuestionAnswer.objects.filter(user=interview.user,
+                                                        session=interview, is_asked=True)
+    context = {
+        'interview': interview,
+        'questions': questions
+    }
+    return render(request, 'migpt/interview_result.html', context)
 
 
 def get_question(request):

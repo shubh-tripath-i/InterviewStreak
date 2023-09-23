@@ -1,4 +1,9 @@
 {% include "migpt/base.html" %}
+
+{% if interview %}
+<a href="{% url 'migpt:start_interview' %}">Resume last interview</a>
+{% endif %}
+
 <div class="login-form">
     <h1>Register</h1>
     <form method="POST">

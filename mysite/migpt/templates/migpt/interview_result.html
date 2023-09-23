@@ -1,0 +1,25 @@
+{% include "migpt/base.html" %}
+
+<div class="card">
+    <ul>
+        <l1>Review: {{ interview.review }}</l1>
+        <l1>Strong Points: {{ interview.strong_points }}</l1>
+        <l1>Weak Points: {{ interview.weak_points }}</l1>
+        <l1>Improvements: {{ interview.improvements }}</l1>
+        <l1>If Selected: {{ interview.if_selected }}</l1>
+        <l1>Reason: {{ interview.reason_selection }}</l1>
+    </ul>
+</div>
+
+{% for question in questions %}
+<div class="card">
+    <ul>
+        <li>Question: {{ question.question }}</li>
+        <li>User Anwer: {{ question.answer }}</li>
+        <li>Review: {{ question.review }}</li>
+        <li>Improvements: {{ question.improvements }}</li>
+        <li>Score: {{ question.score }}</li>
+        <li>Perfect Answer: {{ question.perfect_answer }}</li>
+    </ul>
+</div>
+{% endfor %}
