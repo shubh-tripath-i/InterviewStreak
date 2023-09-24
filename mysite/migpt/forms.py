@@ -2,14 +2,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from migpt import models
-
+from django.utils.text import slugify
+import random
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', )
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -21,6 +22,13 @@ class SignUpForm(UserCreationForm):
     def save(self, commit=True):
         user = super(SignUpForm, self).save(commit=False)
         user.email = self.cleaned_data['email']
+        username = slugify(user.email.split('@')[0])
+        i = 0
+        while User.objects.filter(username=username).exists():
+            username = f"{slugify(user.email.split('@')[0])}{i}"
+            i += 1
+
+        user.username = username
         if commit:
             user.save()
         return user

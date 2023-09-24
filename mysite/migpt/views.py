@@ -66,6 +66,7 @@ def verify_email(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
+        models.UserProfile.objects.create(user=user)
         return HttpResponse('Email verification succesful')
     else:
         return HttpResponse('Activation link is invalid!')
@@ -110,16 +111,10 @@ def create_interview_session(request):
         if form.is_valid():
             interview = form.save(commit=False)
             interview.user = request.user
-            # userprofile = models.UserProfile.objects.get(user=request.user)
             interview.is_complete = False
             interview = form.save()
             request.session['interview_id'] = interview.id
             return redirect("migpt:start_interview")
-            # if userprofile.token > 0:
-                
-            # else:
-            #     # TODO: Redirect to pricing page
-            #     return HttpResponse("Insufficient credits")
     else:
         form = UserInterviewForm()
         context = {

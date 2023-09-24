@@ -57,9 +57,6 @@ def complete_interview(interview_id):
     interview = models.UserInterview.objects.get(id=interview_id)
     interview.is_complete = True
     interview.save()
-    userprofile = models.UserProfile.objects.get(user=interview.user)
-    userprofile.token -= 1
-    userprofile.save()
     # We can charge extra to get answer level review as we'll have to make several api costs
     #generate_review(interview)
     #generate_answer_review(interview)
