@@ -16,13 +16,14 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 import ast
 
+
 class CustomPasswordResetView(PasswordResetView):
     def form_valid(self, form):
         email = form.cleaned_data['email']
         User = get_user_model()
 
         try:
-            user = User.objects.get(email=email)
+            User.objects.get(email=email)
         except User.DoesNotExist:
             # Email doesn't exist in the database; show an error message
             return HttpResponse('Email does not exist')
@@ -137,6 +138,7 @@ def start_interview(request):
                                                              session=interview)
         if not questions:
             questions = utils.generate_questions(interview)
+            print(len(questions), "questions generated")
             for question in questions:
                 print(question, type(question))
                 models.UserQuestionAnswer.objects.create(question=question, user=interview.user,

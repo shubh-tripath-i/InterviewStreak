@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from migpt import models
 from django.utils.text import slugify
-import random
+from django.core.validators import MaxLengthValidator
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -45,7 +45,7 @@ class UserProfileForm(forms.ModelForm):
 class UserInterviewForm(forms.ModelForm):
     class Meta:
         model = models.UserInterview
-        fields = ('job_role',)
-        # fields = ('company', 'job_role', 'interview_round', 'job_description', 'subject', 'topic',
+        fields = ('job_role', 'job_description', 'company')
+        # fields = ('interview_round', 'subject', 'topic',
         #           'tools', 'difficulty_level', 'question_type', #'user_instructions',
         #           'tags', 'duration')
