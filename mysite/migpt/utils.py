@@ -43,13 +43,16 @@ class OutputParser(ListOutputParser):
     def get_format_instructions(self) -> str:
         return (
             "Your output strictly should be a list of questions enclosed in square brackets separated by commas and each question enclosed in double inverted commas, so that they could be parsed to a list of questions easily, "
-            "eg: [\"question1\", \"question2\", \"question3\", \"question4\"] "
+            "Example 1: [\"question1\", \"question2\", \"question3\", \"question4\"]. "
+            "Example 2: [\"Tell me about yourself?\", \"What are your strength?\", \"Where do you see yourself after 5 years?\"]."
         )
     def parse(self, text: str) -> List[str]:
         """Parse the output of an LLM call."""
         try:
             return ast.literal_eval(text)
-        except:
+        except Exception as e:
+            print(e)
+            print("Model outputted", text)
             raise OutputParserMalfunctionException
 
 
@@ -107,22 +110,30 @@ def prompt_generator(interview, type):
     template = "You are an interviewer. "
 
     if interview.company:
-        template += f"You work for {interview.company}. "
+        template += f"You are hiring for the role of {interview.job_role} for {interview.company}. "
+    else:
+        template += f"You are hiring for the role of {interview.job_role}. "
 
-    template += f"You are hiring for the role of {interview.job_role}. "
-
-    if interview.job_description:
-        template += f"The job description is: {interview.job_description}.\n"
-
-    template += f"The round number is {interview.interview_round}. "
+    # template += f"The round number is {interview.interview_round}. "
 
     if type == "question_generation":
-        
-        template += "Generate questions regarding it to test if the candidate is a valid fit.\
+
+        template += "Generate questions to test if the candidate is a valid fit for the job role.\
  Generate questions in a sequence like a real interview happens starting with greeting\
  candidate, introduction and then casually going into domain knowledge starting with easy\
  questions and then slightly raising the difficulty level of the interview. "
 
+        if interview.job_description:
+            template += f"\n\nThe job description is: {interview.job_description}.\n\n"
+#             template += "The generated questions should contain a mix of the questions common\
+#  to the job role and questions directly from the job description."
+            template += f"You need to assess both the candidate's domain knowledge, and their fit\
+ for the job description. Include a mix of best interview questions asked to\
+ {interview.job_role} and some questions specific to evaluating the candidate's knowledge on\
+ the responsibilites, domains, sub-domains skills, tools and technologies mentioned in the job description. "
+
+            template += ""
+        
         if interview.subject:
             template += f"You need to access the candidate's skill on {interview.subject}. "
 
@@ -135,23 +146,45 @@ def prompt_generator(interview, type):
         if interview.difficulty_level:
             template += f"The difficulty level of questions should be {interview.difficulty_level}. "
         else:
-            template += "Ensure questions cater to a range of difficulty levels, encompassing both straightforward and challenging aspects. "
+            template += "Ensure questions cater to a range of difficulty levels, i.e, easy, medium and hard,\
+ encompassing both straightforward and challenging aspects. "
 
         if interview.user_instructions:
             template += f"Further instructions are: {interview.user_instructions}."
 
-        template += "Include a variety of questions so both theoretical and practical\
- knowledge of the candidate can be checked. "
+        template += "Include a variety of questions on the concepts and tools required so both theoretical\
+ and practical knowledge of the candidate can be checked. "
 
-        template += "Include scenario-based and real-world industry questions. "
+        template += "Also, include some good scenario-based and real-world industry questions. "
 
-        template += "Organize the questions in a sequential manner,\
- where you first ask questions related to a specific domain, topic or field before moving on\
+        # Below line to add coding questions.
+        # template += "For tech roles, include coding questions on the tools, languages and technologies too for the candidate to implement to check for logic building and tools-specific knowledge."
+
+        template += "Ask the questions in a sequential manner,\
+ where first generate questions related to a specific topic before moving on\
  to the next, allowing for a comprehensive evaluation of the candidate's expertise in each\
  topic and domain. "
 
-        template += "You can not generate more than {number_of_questions} questions.\
- You have to test the candidate's overall  knowledge by it and so frame the questions accordingly. "
+        if interview.company:
+            template += f"Use your prior information regarding the company {interview.company}, and their\
+ past interview information to frame the questions. Also include a few questions specific to their\
+ products and integrations. "
+
+        template += "Ensure that you create a sufficient number of questions to evaluate\
+ the candidate's comprehensive expertise in the field "
+
+        if interview.job_description:
+            template += "and to ascertain whether the candidate\
+ possesses the necessary skills to meet all the responsibilities outlined in the job\
+ description "
+
+        template += "and do so in a way that allows for a reliable assessment, rather than relying\
+ on chance or luck."
+
+        # template += "Try to keep the number of questions around 20 but feel free to generate enough questionsto test the candidate thoroughly."
+
+#         template += "You can not generate more than {number_of_questions} questions.\
+#  You have to test the candidate's overall  knowledge by it and so frame the questions accordingly. "
         template += "\n\n{format_instructions}"
         prompt = PromptTemplate.from_template(template)
         return prompt
@@ -201,11 +234,11 @@ def generate_questions(interview):
 
     retries = 0
     while True:
-        if retries > 4:
+        if retries > 9:
             print("Maximum retries passed")
             break
         try:
-            response = chain({'number_of_questions': "5",
+            response = chain({'number_of_questions': "20",
                               'format_instructions': format_instructions})
             break
         except OutputParserMalfunctionException:

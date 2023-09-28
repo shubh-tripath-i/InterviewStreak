@@ -89,18 +89,18 @@ class UserInterview(models.Model):
     improvements = models.TextField(max_length=1024, null=True, blank=True)
     is_selected = models.BooleanField(null=True)
     reason_selection = models.TextField(max_length=1024, null=True, blank=True)
-    company = models.CharField(max_length=50, null=True, blank=True)
-    job_role = models.CharField(max_length=50)
+    company = models.CharField(max_length=128, null=True, blank=True)
+    job_role = models.CharField(max_length=128)
     interview_round = models.PositiveIntegerField(default=1,
                                                   validators=[MinValueValidator(1),
                                                               MaxValueValidator(10)],
                                                   null=True, blank=True)
-    job_description = models.CharField(max_length=400, null=True, blank=True)
-    subject = models.CharField(max_length=100, null=True, blank=True,
+    job_description = models.TextField(max_length=2048, null=True, blank=True)
+    subject = models.CharField(max_length=128, null=True, blank=True,
                                help_text="Put a comma after each subject")
-    topic = models.CharField(max_length=100, null=True, blank=True,
+    topic = models.CharField(max_length=128, null=True, blank=True,
                              help_text="Put a comma after each topic")
-    tools = models.CharField(max_length=500, null=True, blank=True,
+    tools = models.CharField(max_length=512, null=True, blank=True,
                              help_text="Put a comma after each tool")
     difficulty_level = models.CharField(max_length=6, null=True,
                                         blank=True, choices=choices_for_difficulty)
