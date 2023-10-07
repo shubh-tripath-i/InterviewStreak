@@ -15,6 +15,7 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 import ast
+from decimal import Decimal
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -55,7 +56,7 @@ def signup(request):
             return HttpResponse('Please confirm your email address to complete the registration')
     else:
         form = SignUpForm()
-    return render(request, 'migpt/signup.html', {'form': form})
+    return render(request, 'migpt/signup.html',{'form': form})
 
 
 def verify_email(request, uidb64, token):
@@ -139,10 +140,12 @@ def start_interview(request):
         if not questions:
             questions = utils.generate_questions(interview)
             print(len(questions), "questions generated")
+            pos = 1
             for question in questions:
                 print(question, type(question))
                 models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
-                                                        session=interview)
+                                                        session=interview, pos=pos)
+                pos += 1
         context = {}
         return render(request, 'migpt/interview_interface.html', context)
     else:
@@ -164,7 +167,7 @@ def display_result(request):
     if request.user != interview.user:
         return HttpResponse("Invalid Request")
     questions = models.UserQuestionAnswer.objects.filter(user=interview.user,
-                                                        session=interview, is_asked=True)
+                                                        session=interview, is_asked=True).order_by('pos')
     context = {
         'interview': interview,
         'questions': questions
@@ -176,11 +179,13 @@ def get_question(request):
     interview_id = request.session.get('interview_id')
     interview = models.UserInterview.objects.get(id=interview_id)
     question = models.UserQuestionAnswer.objects.filter(user=interview.user,
-                                                        session=interview, is_asked=False).first()
+                                                        session=interview,
+                                                        is_asked=False).order_by('pos').first()
     if not question:
-        utils.complete_interview(interview_id)
+        # utils.complete_interview(interview_id)
         data = {
             'success': True,
+            'redirect': '/end-interview'
         }
         return JsonResponse(data)
     request.session['question_id'] = question.id
@@ -196,13 +201,36 @@ def save_answer(request):
         answer_text = request.POST.get('answer')
         interview_id = request.session.get('interview_id')
         interview = models.UserInterview.objects.get(id=interview_id)
+
         if interview.is_complete:
             return JsonResponse({'success': False, 'error': 'Interview Already Complete'})
         if answer_text:
             question = models.UserQuestionAnswer.objects.get(id=request.session.get('question_id'))
-            question.answer = answer_text
-            question.is_asked = True
-            question.save()
+            if question.answer is None:
+                question.answer = answer_text
+                question.is_asked = True
+                question.save()
+                if interview.cross_question:
+                    decimal_part = str(question.pos).split('.')[1]
+                    if float(decimal_part) == 0:
+                        pos_to_add = '0.1'
+                    else:
+                        depth = len(decimal_part)
+                        pos_to_add = '0.'
+                        for i in range(depth):
+                            pos_to_add += '0'
+                        pos_to_add += '1'
+                    pos = Decimal(str(question.pos)) + Decimal(pos_to_add)
+                    depth = len(str(pos).split('.')[1])
+
+                    if depth <= 2:
+                        cross_questions = utils.generate_cross_question(interview, question)
+                        print("Cross questions generated")
+                        for cross_question in cross_questions:
+                            print(cross_question)
+                            models.UserQuestionAnswer.objects.create(question=cross_question, user=interview.user,
+                                                                    session=interview, pos=pos)
+                            pos += Decimal(pos_to_add)
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'error': 'Answer is missing'})

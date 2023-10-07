@@ -45,7 +45,7 @@ class UserProfileForm(forms.ModelForm):
 class UserInterviewForm(forms.ModelForm):
     class Meta:
         model = models.UserInterview
-        fields = ('job_role', 'job_description', 'company')
+        fields = ('job_role', 'job_description', 'company', 'duration')
         # fields = ('interview_round', 'subject', 'topic',
         #           'tools', 'difficulty_level', 'question_type', #'user_instructions',
         #           'tags', 'duration')
