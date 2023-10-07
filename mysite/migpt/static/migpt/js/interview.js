@@ -26,8 +26,9 @@ $(document).ready(function () {
                 if (data.question) {
                     addMessage(data.question, true);
                 } else {
-                    addMessage("No more questions. Chat ended.", true);
-                    //window.location.href = "/"
+                    addMessage("No more questions.", true);
+                    addMessage("You will be redirected to the result page.", true);
+                    window.location.href = data.redirect;
                 }
             },
             error: function (error) {

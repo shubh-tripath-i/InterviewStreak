@@ -107,6 +107,7 @@ class UserInterview(models.Model):
     question_type = models.CharField(max_length=12, null=True, default="all",
                                      blank=True, choices=choices_for_question_type)
     user_instructions = models.TextField(null=True, blank=True,)  # To get custom user instructions
+    cross_question = models.BooleanField(default=True)
     tags = models.CharField(max_length=500, null=True, blank=True,
                             help_text="Put a comma after each tag")
     duration = models.DurationField(default=timedelta(minutes=30), null=True, blank=True)
@@ -119,6 +120,7 @@ class UserInterview(models.Model):
 class UserQuestionAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     session = models.ForeignKey(UserInterview, on_delete=models.CASCADE)
+    pos = models.FloatField(default=0.0)
     question = models.TextField()
     answer = models.TextField(null=True, blank=True)
     perfect_answer = models.TextField(null=True, blank=True)

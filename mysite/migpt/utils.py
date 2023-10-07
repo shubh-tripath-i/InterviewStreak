@@ -1,16 +1,12 @@
 from migpt import models
-from langchain.vectorstores import Chroma
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from typing import List
-from langchain.chains import ConversationalRetrievalChain, LLMChain
-from langchain.vectorstores import Milvus
-from langchain.output_parsers import CommaSeparatedListOutputParser
+from langchain.chains import LLMChain
 from langchain.output_parsers.list import ListOutputParser
 from langchain.llms.fake import FakeListLLM
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field, validator
+import math
 import ast
 from langchain.prompts import (
     SystemMessagePromptTemplate,
@@ -36,8 +32,10 @@ class InterviewReview(BaseModel):
     is_selected: bool = Field(description="Will you select the candidate or not?")
     reason_selection: str = Field(description="Reason of why you selected or rejected the candidate.")
 
+
 class OutputParserMalfunctionException(Exception):
     pass
+
 
 class OutputParser(ListOutputParser):
     def get_format_instructions(self) -> str:
@@ -46,6 +44,7 @@ class OutputParser(ListOutputParser):
             "Example 1: [\"question1\", \"question2\", \"question3\", \"question4\"]. "
             "Example 2: [\"Tell me about yourself?\", \"What are your strength?\", \"Where do you see yourself after 5 years?\"]."
         )
+
     def parse(self, text: str) -> List[str]:
         """Parse the output of an LLM call."""
         try:
@@ -58,11 +57,11 @@ class OutputParser(ListOutputParser):
 
 def complete_interview(interview_id):
     interview = models.UserInterview.objects.get(id=interview_id)
-    interview.is_complete = True
-    interview.save()
-    # We can charge extra to get answer level review as we'll have to make several api costs
-    #generate_review(interview)
-    #generate_answer_review(interview)
+    if not interview.is_complete:
+        interview.is_complete = True
+        interview.save()
+        #generate_review(interview)
+        #generate_answer_review(interview)
 
 
 def generate_answer_review(interview):
@@ -89,7 +88,7 @@ def generate_review(interview):
                                                          is_asked=True, answer__isnull=False)
     question_answer = ""
     for question in questions:
-        question_answer += f"Question: {question.question}\nAnswer: {question.answer}\n\n"
+        question_answer += f"Question: {question.question}\nCandidate's Answer: {question.answer}\n\n"
     chain = make_review_generation_chain(prompt, output_parser)
     response = chain({'question_answer': question_answer,
                       'format_instructions': output_parser.get_format_instructions()})
@@ -101,9 +100,6 @@ def generate_review(interview):
     interview.is_selected = response['text'].is_selected
     interview.reason_selection = response['text'].reason_selection
     interview.save()
-
-def feed_data():
-    pass
 
 
 def prompt_generator(interview, type):
@@ -133,7 +129,7 @@ def prompt_generator(interview, type):
  the responsibilites, domains, sub-domains skills, tools and technologies mentioned in the job description. "
 
             template += ""
-        
+
         if interview.subject:
             template += f"You need to access the candidate's skill on {interview.subject}. "
 
@@ -183,10 +179,52 @@ def prompt_generator(interview, type):
 
         # template += "Try to keep the number of questions around 20 but feel free to generate enough questionsto test the candidate thoroughly."
 
-#         template += "You can not generate more than {number_of_questions} questions.\
-#  You have to test the candidate's overall  knowledge by it and so frame the questions accordingly. "
+        template += "You can not generate more than {number_of_questions} questions.\
+ You have to test the candidate's overall  knowledge with {number_of_questions} questions, so frame the questions accordingly. "
         template += "\n\n{format_instructions}"
         prompt = PromptTemplate.from_template(template)
+        return prompt
+
+    if type == "cross_question":
+        if interview.job_description:
+            template += f"\n\nThe job description is: {interview.job_description}.\n\n"
+
+#         template += "You are given the questions asked in the interview and the candidate's answer to it in sequence. You need to evaluate the\
+#  following candidate's answers to the interview questions and generate follow-up questions\
+#  based on the candidate's response to the last question only if very necessary. The follow-up questions should seek additional information, clarification, or\
+#  further details, as you would in a real interview. Choose number of questions according to the requirement but remember you can generate maximum {number_of_questions} questions.  Generate questions only if they will help much in assessing the candidate further and should make sense to the candidate's answer.\n"
+
+        template += "Your primary task is to generate follow-up questions based on the candidate's\
+ responses to questions. However, it's important to do so selectively, considering the following\
+ guidelines:\n1. Clarification: The candidate's response to the question is unclear or vague.\
+\n2. Elaboration: The candidate's initial answer is too brief, incomplete or lacks details.\
+\n3. Behavioral Interviewing: To probe deeper into the candidate's past behavior and actions in\
+ specific situations.\n4. Assessment of Skills and Competencies: Ask questions related to technical\
+ or domain-specific knowledge to thoroughly assess the candidate's qualifications.\
+\n5. Behavioral Probing: Explore the candidate's behavior, decision-making processes, problem-solving\
+ abilities, and interpersonal skills.\n6. Situational Interviews: Present hypothetical scenarios and\
+ ask questions to understand how the candidate would approach and resolve them.\
+\n7. Adaptability: Probe into the candidate's ability to adapt to changing circumstances and handle\
+ unexpected challenges.\n\nGenerate follow-up questions only when one or more of the above listed\
+ scenario is matched. Remember, excessive or irrelevant follow-up questions can disrupt the interview\
+ flow and overwhelm the candidate. Hence generate questions only if absolutely necessary. Your role\
+ is to facilitate a meaningful and balanced conversation. Also, avoid generating follow-up questions\
+ when the candidate explicitly states a lack of knowledge on a particular concept and avoid when the\
+ candidate's response is comprehensive, detailed, and effectively addresses the question, indicating\
+ good knowledge on a concept. Firstly, generate a score measuring the importance of the follow-up\
+ question needed in this scenario ranging from 1 to 10. So generate follow-up question only if the\
+ importance score is greater than 8. If the score is lesser than or equal to 8, do not generate any\
+ question.\n\nNow, given a candidate's response to a question or a set of questions in the sequence\
+ they were asked, generate follow-up questions only when it's much needed. Choose number of follow-up\
+ questions to generate according to the requirement. You can generate maximum of\
+ {number_of_cross_questions} questions. That means you can generate less than\
+ {number_of_cross_questions} questions but not more than it.\n\n"
+
+        human_template = "{question_answer}\n{format_instructions}"
+        prompt = ChatPromptTemplate.from_messages(
+            [SystemMessagePromptTemplate.from_template(template),
+             HumanMessagePromptTemplate.from_template(human_template)]
+        )
         return prompt
 
     if type == "answer_review_generation":
@@ -201,12 +239,13 @@ def prompt_generator(interview, type):
  Note that the output will be provided to the candidate, so use direct speech as you are\
  advising the candidate. So, use 'you' to refer to the candidate.\n"
 
-        human_template = "Question: {question}\nAnswer: {answer}\n\n{format_instructions}"
+        human_template = "Question: {question}\nCandidate's Answer: {answer}\n\n{format_instructions}"
         prompt = ChatPromptTemplate.from_messages(
             [SystemMessagePromptTemplate.from_template(template),
              HumanMessagePromptTemplate.from_template(human_template)]
         )
         return prompt
+
     if type == "review_generation":
         template += "You are given all the questions asked during the interview and candidate's answer to it.\
  Your task is to do a detailed analysis of the candidate on the basis of it. Generate a detailed\
@@ -225,20 +264,22 @@ def prompt_generator(interview, type):
         )
         return prompt
 
+
 def generate_questions(interview):
-    prompt = prompt_generator(interview, "question_generation")
     output_parser = OutputParser()
     format_instructions = output_parser.get_format_instructions()
+    prompt = prompt_generator(interview, "question_generation")
     chain = make_question_generation_chain(prompt, output_parser)
+    number_of_questions = 3
     response = None
 
     retries = 0
     while True:
-        if retries > 9:
+        if retries > 5:
             print("Maximum retries passed")
             break
         try:
-            response = chain({'number_of_questions': "20",
+            response = chain({'number_of_questions': number_of_questions,
                               'format_instructions': format_instructions})
             break
         except OutputParserMalfunctionException:
@@ -256,6 +297,47 @@ def generate_questions(interview):
         print("No response generated")
 
 
+def generate_cross_question(interview, question):
+    output_parser = OutputParser()
+    format_instructions = output_parser.get_format_instructions()
+    prompt = prompt_generator(interview, "cross_question")
+    chain = cross_question_chain(prompt, output_parser)
+    number_of_cross_questions = 2
+    response = None
+    pos_start = math.floor(question.pos)
+    pos_end = pos_start + 1
+    questions = models.UserQuestionAnswer.objects.filter(user=interview.user, session=interview,
+                                                         is_asked=True, pos__gte=pos_start,
+                                                         pos__lt=pos_end)
+    question_answer = ""
+    for question in questions:
+        question_answer += f"Question: {question.question}\nCandidate's Answer: {question.answer}\n\n"
+    retries = 0
+    while True:
+        if retries > 5:
+            print("Maximum retries passed")
+            break
+        try:
+            response = chain({'number_of_cross_questions': number_of_cross_questions,
+                              'format_instructions': format_instructions,
+                              'question_answer': question_answer})
+            break
+        except OutputParserMalfunctionException:
+            print("Outputparser exception occures")
+            retries += 1
+            continue
+        except Exception as e:
+            print(f"Exception occurred during response generation: {e}")
+            break
+
+    if response:
+        return response['text']
+    else:
+        return []
+        # Handle what to show to users
+        print("No response generated")
+
+
 def make_question_generation_chain(prompt, output_parser):
     model = OpenAI(
         model_name="gpt-3.5-turbo",
@@ -269,31 +351,25 @@ def make_question_generation_chain(prompt, output_parser):
 def make_review_generation_chain(prompt, output_parser):
     model = OpenAI(
         model_name="gpt-3.5-turbo",
-        temperature=0.2,
+        temperature=0,
         verbose=True
     )
     chain = LLMChain(llm=model, prompt=prompt, output_parser=output_parser, verbose=True)
     return chain
 
 
-def make_chain(prompt):
-    model = ChatOpenAI(
+def cross_question_chain(prompt, output_parser):
+    model = OpenAI(
         model_name="gpt-3.5-turbo",
-        temperature="0",
+        temperature=0.4,
+        verbose=True
     )
+    chain = LLMChain(llm=model, output_parser=output_parser, prompt=prompt, verbose=True)
+    return chain
 
-    vector_db = Chroma(
-        collection_name="interview-data",
-        embedding_function=OpenAIEmbeddings(),
-    )
 
-    chain = ConversationalRetrievalChain.from_llm(
-        model,
-        retriever=vector_db.as_retriever(),
-        return_source_documents=False,
-        verbose=True,
-        combine_docs_chain_kwargs=dict(prompt=prompt),
-        rephrase_question=False,
-        return_generated_question=False,
-    )
+def testing_chain(prompt, output_parser):
+    responses = ["Have you worked on Tensorflow?"]
+    model = FakeListLLM(responses=responses)
+    chain = LLMChain(llm=model, prompt=prompt, output_parser=output_parser, verbose=True)
     return chain
