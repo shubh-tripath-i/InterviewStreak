@@ -14,8 +14,9 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-import ast
 from decimal import Decimal
+from django import forms
+from datetime import timedelta
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -119,12 +120,15 @@ def create_interview_session(request):
             return redirect("migpt:start_interview")
     else:
         form = UserInterviewForm()
+        user = request.user
+        if user.is_staff is False:
+            form.fields['auto_answer'].widget = forms.HiddenInput()
         context = {
             'form': form,
             'interview': None
         }
         interview = models.UserInterview.objects.filter(user=request.user).last()
-        if interview.is_complete is False:
+        if interview and interview.is_complete is False:
             context['interview'] = interview
             request.session['interview_id'] = interview.id
     return render(request, 'migpt/create_interview_session.html', context)
@@ -138,11 +142,22 @@ def start_interview(request):
         questions = models.UserQuestionAnswer.objects.filter(user=interview.user,
                                                              session=interview)
         if not questions:
-            questions = utils.generate_questions(interview)
+            if interview.duration == timedelta(minutes=30):
+                number_of_questions = 15
+            elif interview.duration == timedelta(minutes=60):
+                number_of_questions = 20
+            elif interview.duration == timedelta(minutes=90):
+                number_of_questions = 25
+            elif interview.duration == timedelta(minutes=120):
+                number_of_questions = 30
+            else:
+                raise Exception("Invalid duration")
+
+            questions = utils.generate_questions(interview, number_of_questions)
             print(len(questions), "questions generated")
             pos = 1
             for question in questions:
-                print(question, type(question))
+                print(question)
                 models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
                                                         session=interview, pos=pos)
                 pos += 1
@@ -170,7 +185,8 @@ def display_result(request):
                                                         session=interview, is_asked=True).order_by('pos')
     context = {
         'interview': interview,
-        'questions': questions
+        'questions': questions,
+        'num_questions': len(questions)
     }
     return render(request, 'migpt/interview_result.html', context)
 
@@ -191,7 +207,8 @@ def get_question(request):
     request.session['question_id'] = question.id
     data = {
         'success': True,
-        'question': question.question
+        'question': question.question,
+        'auto_answer': interview.auto_answer
     }
     return JsonResponse(data)
 
@@ -211,6 +228,26 @@ def save_answer(request):
                 question.is_asked = True
                 question.save()
                 if interview.cross_question:
+
+                    if interview.duration == timedelta(minutes=30):
+                        number_of_cross_questions = 1
+                        depth_cross_questioning = 2
+                        importance_score = 8
+                    elif interview.duration == timedelta(minutes=60):
+                        number_of_cross_questions = 2
+                        depth_cross_questioning = 2
+                        importance_score = 9
+                    elif interview.duration == timedelta(minutes=90):
+                        number_of_cross_questions = 2
+                        depth_cross_questioning = 2
+                        importance_score = 8
+                    elif interview.duration == timedelta(minutes=120):
+                        number_of_cross_questions = 2
+                        depth_cross_questioning = 3
+                        importance_score = 7
+                    else:
+                        raise Exception("Invalid duration")
+
                     decimal_part = str(question.pos).split('.')[1]
                     if float(decimal_part) == 0:
                         pos_to_add = '0.1'
@@ -222,16 +259,34 @@ def save_answer(request):
                         pos_to_add += '1'
                     pos = Decimal(str(question.pos)) + Decimal(pos_to_add)
                     depth = len(str(pos).split('.')[1])
-
-                    if depth <= 2:
-                        cross_questions = utils.generate_cross_question(interview, question)
+                    pos_to_add = Decimal(pos_to_add)
+                    if depth <= depth_cross_questioning:
+                        cross_questions = utils.generate_cross_question(interview, question,
+                                                                        number_of_cross_questions,
+                                                                        importance_score)
                         print("Cross questions generated")
+                        if len(cross_questions) > number_of_cross_questions:
+                            pos_to_add = pos_to_add*Decimal('0.1')
+                            pos = Decimal(str(question.pos)) + Decimal(pos_to_add)
                         for cross_question in cross_questions:
                             print(cross_question)
                             models.UserQuestionAnswer.objects.create(question=cross_question, user=interview.user,
                                                                     session=interview, pos=pos)
-                            pos += Decimal(pos_to_add)
+                            pos += pos_to_add
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'error': 'Answer is missing'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+def get_answer_automatically(request):
+    if request.user.is_staff is False:
+        return JsonResponse({'success': False, 'error': 'Invalid request'})
+    if request.method == 'GET':
+        interview_id = request.session.get('interview_id')
+        interview = models.UserInterview.objects.get(id=interview_id)
+        question = models.UserQuestionAnswer.objects.get(id=request.session.get('question_id'))
+        answer_text = utils.generate_answer(interview.job_role, question.question)
+        return JsonResponse({'success': True, 'answer': answer_text})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'})

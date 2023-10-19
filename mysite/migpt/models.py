@@ -79,6 +79,13 @@ class UserInterview(models.Model):
         ('design', 'Design')
     )
 
+    choice_for_duration = (
+        (timedelta(minutes=30), '30 minutes'),
+        # (timedelta(minutes=60), '1 hour'),
+        # (timedelta(minutes=90), '1 hour 30 minutes'),
+        # (timedelta(minutes=120), '2 hours')
+    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     score = models.PositiveIntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
@@ -110,8 +117,13 @@ class UserInterview(models.Model):
     cross_question = models.BooleanField(default=True)
     tags = models.CharField(max_length=500, null=True, blank=True,
                             help_text="Put a comma after each tag")
-    duration = models.DurationField(default=timedelta(minutes=30), null=True, blank=True)
+    duration = models.DurationField(default=timedelta(minutes=30), choices=choice_for_duration)
+    auto_answer = models.BooleanField(default=False,
+                                      help_text="Automatically answers all question using chatgpt.")
     is_complete = models.BooleanField(default=False)
+    cost_question_generation = models.FloatField(default=0.0)
+    cost_review = models.FloatField(default=0.0)
+    cost_answer_review = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # recording =
