@@ -25,10 +25,33 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.question) {
                     addMessage(data.question, true);
+                    if (data.auto_answer){
+                        getAutoAnswer();
+                    }
                 } else {
                     addMessage("No more questions.", true);
                     addMessage("You will be redirected to the result page.", true);
                     window.location.href = data.redirect;
+                }
+            },
+            error: function (error) {
+                console.error(error);
+            },
+        });
+    }
+
+    function getAutoAnswer() {
+        $.ajax({
+            url: "/get-answer-automatically/",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data.success) {
+                    const userAnswerValue = data.answer
+                    $("#message-input").val(userAnswerValue);
+                    $("#send-button").trigger("click"); 
+                } else {
+                    console.error("Failed to get answer automatically.");
                 }
             },
             error: function (error) {
@@ -44,6 +67,8 @@ $(document).ready(function () {
     $("#send-button").click(function () {
         const userAnswer = $("#message-input").val();
         if (userAnswer.trim() !== "") {
+            $("#message-input").val("");
+            addMessage(userAnswer, false);
             // Send the user's answer to Django for processing and update the database
             $.ajax({
                 url: "/save-answer/",
@@ -57,10 +82,6 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     if (data.success) {
-                        // Clear the input field
-                        $("#message-input").val("");
-                        // Get the next question after a successful answer
-                        addMessage(userAnswer, false);
                         getNextQuestion();
                     } else {
                         console.error("Failed to save answer.");

@@ -14,6 +14,7 @@ from langchain.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate
 )
+from langchain.callbacks import get_openai_callback
 
 
 class AnswerReview(BaseModel):
@@ -40,9 +41,9 @@ class OutputParserMalfunctionException(Exception):
 class OutputParser(ListOutputParser):
     def get_format_instructions(self) -> str:
         return (
-            "Your output strictly should be a list of questions enclosed in square brackets separated by commas and each question enclosed in double inverted commas, so that they could be parsed to a list of questions easily, "
-            "Example 1: [\"question1\", \"question2\", \"question3\", \"question4\"]. "
-            "Example 2: [\"Tell me about yourself?\", \"What are your strength?\", \"Where do you see yourself after 5 years?\"]."
+            "Your output strictly should be a list of questions enclosed in square brackets separated by commas and each question enclosed in double inverted commas, so that they could be parsed to a list of questions easily. Further are two examples for a valid output schema. "
+            "Example 1 (representing 4 questions): [\"question1\", \"question2\", \"question3\", \"question4\"]. "
+            "Example 2 (representing 3 questions): [\"Tell me about yourself?\", \"What are your strength?\", \"Where do you see yourself after 5 years?\"]."
         )
 
     def parse(self, text: str) -> List[str]:
@@ -60,25 +61,33 @@ def complete_interview(interview_id):
     if not interview.is_complete:
         interview.is_complete = True
         interview.save()
-        #generate_review(interview)
-        #generate_answer_review(interview)
+        # generate_review(interview)
+        # generate_answer_review(interview)
 
 
 def generate_answer_review(interview):
     prompt = prompt_generator(interview, "answer_review_generation")
     output_parser = PydanticOutputParser(pydantic_object=AnswerReview)
-    chain = make_review_generation_chain(prompt, output_parser)
+    chain = make_review_generation_chain(prompt, output_parser, model_name="gpt-3.5-turbo")
     questions = models.UserQuestionAnswer.objects.filter(user=interview.user, session=interview,
                                                          is_asked=True, answer__isnull=False)
     for question in questions:
-        response = chain({'question': question.question,
-                          'answer': question.answer,
-                          'format_instructions': output_parser.get_format_instructions()})
-        question.score = response['text'].score
-        question.review = response['text'].review
-        question.improvements = response['text'].improvements
-        question.perfect_answer = response['text'].perfect_answer
-        question.save()
+        try:
+            with get_openai_callback() as cb:
+                response = chain({'question': question.question,
+                                'answer': question.answer,
+                                'format_instructions': output_parser.get_format_instructions()})
+                cost_inr = cb.total_cost*83.06
+                print("Cost", cost_inr)
+                interview.cost_answer_review += cost_inr
+                interview.save()
+            question.score = response['text'].score
+            question.review = response['text'].review
+            question.improvements = response['text'].improvements
+            question.perfect_answer = response['text'].perfect_answer
+            question.save()
+        except:
+            continue
 
 
 def generate_review(interview):
@@ -89,9 +98,14 @@ def generate_review(interview):
     question_answer = ""
     for question in questions:
         question_answer += f"Question: {question.question}\nCandidate's Answer: {question.answer}\n\n"
-    chain = make_review_generation_chain(prompt, output_parser)
-    response = chain({'question_answer': question_answer,
-                      'format_instructions': output_parser.get_format_instructions()})
+    chain = make_review_generation_chain(prompt, output_parser, model_name="gpt-3.5-turbo-16k")
+    with get_openai_callback() as cb:
+        response = chain({'question_answer': question_answer,
+                        'format_instructions': output_parser.get_format_instructions()})
+        cost_inr = cb.total_cost*83.06
+        print("Cost", cost_inr)
+        interview.cost_review += cost_inr
+        interview.save()
     interview.score = response['text'].score
     interview.review = response['text'].review
     interview.strong_points = response['text'].strong_points
@@ -102,7 +116,7 @@ def generate_review(interview):
     interview.save()
 
 
-def prompt_generator(interview, type):
+def prompt_generator(interview, type, number_of_cross_questions=None):
     template = "You are an interviewer. "
 
     if interview.company:
@@ -194,36 +208,99 @@ def prompt_generator(interview, type):
 #  based on the candidate's response to the last question only if very necessary. The follow-up questions should seek additional information, clarification, or\
 #  further details, as you would in a real interview. Choose number of questions according to the requirement but remember you can generate maximum {number_of_questions} questions.  Generate questions only if they will help much in assessing the candidate further and should make sense to the candidate's answer.\n"
 
-        template += "Your primary task is to generate follow-up questions based on the candidate's\
- responses to questions. However, it's important to do so selectively, considering the following\
- guidelines:\n1. Clarification: The candidate's response to the question is unclear or vague.\
-\n2. Elaboration: The candidate's initial answer is too brief, incomplete or lacks details.\
-\n3. Behavioral Interviewing: To probe deeper into the candidate's past behavior and actions in\
- specific situations.\n4. Assessment of Skills and Competencies: Ask questions related to technical\
- or domain-specific knowledge to thoroughly assess the candidate's qualifications.\
-\n5. Behavioral Probing: Explore the candidate's behavior, decision-making processes, problem-solving\
- abilities, and interpersonal skills.\n6. Situational Interviews: Present hypothetical scenarios and\
- ask questions to understand how the candidate would approach and resolve them.\
-\n7. Adaptability: Probe into the candidate's ability to adapt to changing circumstances and handle\
- unexpected challenges.\n\nGenerate follow-up questions only when one or more of the above listed\
- scenario is matched. Remember, excessive or irrelevant follow-up questions can disrupt the interview\
- flow and overwhelm the candidate. Hence generate questions only if absolutely necessary. Your role\
- is to facilitate a meaningful and balanced conversation. Also, avoid generating follow-up questions\
- when the candidate explicitly states a lack of knowledge on a particular concept and avoid when the\
- candidate's response is comprehensive, detailed, and effectively addresses the question, indicating\
- good knowledge on a concept. Firstly, generate a score measuring the importance of the follow-up\
- question needed in this scenario ranging from 1 to 10. So generate follow-up question only if the\
- importance score is greater than 8. If the score is lesser than or equal to 8, do not generate any\
- question.\n\nNow, given a candidate's response to a question or a set of questions in the sequence\
- they were asked, generate follow-up questions only when it's much needed. Choose number of follow-up\
- questions to generate according to the requirement. You can generate maximum of\
- {number_of_cross_questions} questions. That means you can generate less than\
- {number_of_cross_questions} questions but not more than it.\n\n"
+#         template += "Your primary task is to generate follow-up questions based on the candidate's\
+#  responses to questions. However, it's important to do so selectively. Generate follow-up questions when one or more of the following conditions are met for the candidate's response.\
+# \n1. When the candidate's response to the question is unclear or vague.\
+# \n2. When the candidate's initial answer is too brief, incomplete or lacks details.\
+# \n3. When you need to probe deeper into the candidate's past behavior and actions in specific situations.\
+# \n4. When you need to assess the candidate's technical or domain-specific knowledge thoroughly.\
+# \n5. When you want to explore the candidate's behavior, decision-making processes, problem-solving abilities, and interpersonal skills.\
+# \n6. When you want to understand how the candidate would approach and resolve hypothetical scenarios.\
+# \n7. When you want to assess the candidate's ability to adapt to changing circumstances and handle unexpected challenges.\
+# \n\nGenerate follow-up questions only when one or more of the above listed\
+#  conditions is matched. Remember, excessive or irrelevant follow-up questions can disrupt the interview\
+#  flow and overwhelm the candidate. Hence generate questions only if absolutely necessary.\
+#  Also, avoid generating follow-up questions\
+#  when the candidate explicitly states a lack of knowledge on a particular concept and avoid when the\
+#  candidate's response is comprehensive, detailed, and effectively addresses the question, indicating\
+#  good knowledge on a concept. Firstly, generate a score measuring the importance of the follow-up\
+#  question needed in this scenario ranging from 1 to 10. So generate follow-up question only if the\
+#  importance score is greater than or equal to {importance_score}. If the importance score is lesser than\
+#  {importance_score}, do not generate any question.\n\nNow, given a candidate's response\
+#  to a question or a set of questions in the sequence they were asked, generate follow-up questions for the last answer only if needed, based on the candidate's response.\
+#  Ensure that the follow-up questions are concise and directly related to the candidate's last answer.\
+# \nYou can generate maximum of {number_of_cross_questions} follow-up questions. That means you can generate less\
+#  than {number_of_cross_questions} questions but not more than {number_of_cross_questions} in any case.\n\n"
 
-        human_template = "{question_answer}\n{format_instructions}"
+        if number_of_cross_questions > 1:
+            template += "Your primary task is to generate high-quality follow-up questions based on\
+ the candidate's responses to questions. However, you should do so selectively. So, generate follow-up\
+ questions when one or more of the following conditions are met for the candidate's answer:\
+\n1. When the candidate's response to the question is unclear or vague.\
+\n2. When the candidate's initial answer is too brief, incomplete or lacks details.\
+\n3. When you need to probe deeper into the candidate's past behavior and actions in specific situations.\
+\n4. When you need to assess the candidate's technical or domain-specific knowledge thoroughly.\
+\n5. When you want to explore the candidate's behavior, decision-making processes, problem-solving\
+ abilities, and interpersonal skills.\
+\n6. When you want to understand how the candidate would approach and resolve hypothetical scenarios.\
+\n7. When you want to assess the candidate's ability to adapt to changing circumstances and handle\
+ unexpected challenges.\
+\n\nAvoid generating follow-up questions when the candidate explicitly states a lack of knowledge on\
+ a particular concept and also avoid generating questions when the candidate's response is comprehensive,\
+ detailed, and effectively addresses the question, indicating good knowledge on the topic/concept.\
+\nFirstly, generate a score measuring the importance of the follow-up\
+ question needed in this scenario ranging from 1 to 10. Generate follow-up questions only if the\
+ importance score is greater than {importance_score}. If the importance score is lesser than\
+ or equal to {importance_score}, do not generate any question.\n\nNow, given a candidate's response\
+ to a question or a set of questions in the sequence they were asked, generate\
+ follow-up questions, only if much needed, based on the candidate's response. Ensure that the\
+ follow-up questions are concise and directly related to the candidate's last answer."
+
+            if number_of_cross_questions == 2:
+                template += "Choose number of questions according to the situation, analyzing how many follow-up questions are needed as you are intelligent enough to do that but remember you can generate maximum\
+ {number_of_cross_questions} questions. That means you can generate less than or equal to {number_of_cross_questions}\
+ questions, i.e. zero, one or two questions if feasible, but not more than {number_of_cross_questions} questions in any case.\n\n"
+
+                extra_format_instruction = '\n\nStrict Instructions: Do not generate more than {number_of_cross_questions} questions in any case. Output should be\
+ either zero, one or two questions, where number of questions are decided on the basis of importance score.'
+            else:
+                template += "Choose number of questions according to the situation, analyzing how many follow-up questions are needed as you are intelligent enough to do that but remember you can generate maximum\
+ {number_of_cross_questions} questions. That means you can generate less than or equal to {number_of_cross_questions}\
+ questions if feasible, but not more than {number_of_cross_questions} questions in any case.\n\n"
+
+                extra_format_instruction = ''
+        else:
+            template += "Your primary task is to generate a single, high-quality follow-up question\
+ based on the candidate's responses to questions. However, you should do so selectively. So, generate\
+ a follow-up question when one or more of the following conditions are met for the candidate's answer:\
+\n1. When the candidate's response to the question is unclear or vague.\
+\n2. When the candidate's initial answer is too brief, incomplete or lacks details.\
+\n3. When you need to probe deeper into the candidate's past behavior and actions in specific situations.\
+\n4. When you need to assess the candidate's technical or domain-specific knowledge thoroughly.\
+\n5. When you want to explore the candidate's behavior, decision-making processes, problem-solving\
+ abilities, and interpersonal skills.\
+\n6. When you want to understand how the candidate would approach and resolve hypothetical scenarios.\
+\n7. When you want to assess the candidate's ability to adapt to changing circumstances and handle\
+ unexpected challenges.\
+\n\nAvoid generating follow-up question when the candidate explicitly states a lack of knowledge on\
+ a particular concept and also avoid generating question when the candidate's response is\
+ comprehensive, detailed, and effectively addresses the question, indicating good knowledge on the\
+ topic/concept.\nFirstly, generate a score measuring the importance of the follow-up\
+ question needed in this scenario ranging from 1 to 10. Generate follow-up question only if the\
+ importance score is greater than {importance_score}. If the importance score is lesser than\
+ or equal to {importance_score}, do not generate any question.\n\nNow, given a candidate's response\
+ to a question or a set of questions in the sequence they were asked, generate a single follow-up\
+ question, only if much needed, based on the candidate's response. Ensure that the follow-up question\
+ is concise and directly related to the candidate's last answer.\n\n"
+
+            extra_format_instruction = ' Example 3 (representing 1 question): [\"Can you do overtime?\"].\
+\n\nStrict Instructions: Do not generate more than a single/one question in any case. Output should be\
+ either zero or one question on the basis of importance score.'
+        human_template = "{question_answer}"
         prompt = ChatPromptTemplate.from_messages(
             [SystemMessagePromptTemplate.from_template(template),
-             HumanMessagePromptTemplate.from_template(human_template)]
+             HumanMessagePromptTemplate.from_template(human_template),
+             SystemMessagePromptTemplate.from_template('{format_instructions}' + extra_format_instruction)]
         )
         return prompt
 
@@ -265,12 +342,11 @@ def prompt_generator(interview, type):
         return prompt
 
 
-def generate_questions(interview):
+def generate_questions(interview, number_of_questions):
     output_parser = OutputParser()
     format_instructions = output_parser.get_format_instructions()
     prompt = prompt_generator(interview, "question_generation")
     chain = make_question_generation_chain(prompt, output_parser)
-    number_of_questions = 3
     response = None
 
     retries = 0
@@ -279,8 +355,13 @@ def generate_questions(interview):
             print("Maximum retries passed")
             break
         try:
-            response = chain({'number_of_questions': number_of_questions,
-                              'format_instructions': format_instructions})
+            with get_openai_callback() as cb:
+                response = chain({'number_of_questions': number_of_questions,
+                                 'format_instructions': format_instructions})
+                cost_inr = cb.total_cost*83.06
+                print("Cost", cost_inr)
+                interview.cost_question_generation += cost_inr
+                interview.save()
             break
         except OutputParserMalfunctionException:
             print("Outputparser exception occures")
@@ -297,12 +378,11 @@ def generate_questions(interview):
         print("No response generated")
 
 
-def generate_cross_question(interview, question):
+def generate_cross_question(interview, question, number_of_cross_questions, importance_score):
     output_parser = OutputParser()
     format_instructions = output_parser.get_format_instructions()
-    prompt = prompt_generator(interview, "cross_question")
+    prompt = prompt_generator(interview, "cross_question",number_of_cross_questions)
     chain = cross_question_chain(prompt, output_parser)
-    number_of_cross_questions = 2
     response = None
     pos_start = math.floor(question.pos)
     pos_end = pos_start + 1
@@ -314,13 +394,19 @@ def generate_cross_question(interview, question):
         question_answer += f"Question: {question.question}\nCandidate's Answer: {question.answer}\n\n"
     retries = 0
     while True:
-        if retries > 5:
+        if retries > 3:
             print("Maximum retries passed")
             break
         try:
-            response = chain({'number_of_cross_questions': number_of_cross_questions,
-                              'format_instructions': format_instructions,
-                              'question_answer': question_answer})
+            with get_openai_callback() as cb:
+                response = chain({'number_of_cross_questions': number_of_cross_questions,
+                                  'importance_score': importance_score,
+                                  'format_instructions': format_instructions,
+                                  'question_answer': question_answer})
+                cost_inr = cb.total_cost*83.06
+                print("Cost", cost_inr)
+                interview.cost_question_generation += cost_inr
+                interview.save()
             break
         except OutputParserMalfunctionException:
             print("Outputparser exception occures")
@@ -348,10 +434,10 @@ def make_question_generation_chain(prompt, output_parser):
     return chain
 
 
-def make_review_generation_chain(prompt, output_parser):
+def make_review_generation_chain(prompt, output_parser, model_name):
     model = OpenAI(
-        model_name="gpt-3.5-turbo",
-        temperature=0,
+        model_name=model_name,
+        temperature=0.2,
         verbose=True
     )
     chain = LLMChain(llm=model, prompt=prompt, output_parser=output_parser, verbose=True)
@@ -361,7 +447,7 @@ def make_review_generation_chain(prompt, output_parser):
 def cross_question_chain(prompt, output_parser):
     model = OpenAI(
         model_name="gpt-3.5-turbo",
-        temperature=0.4,
+        temperature=0.2,
         verbose=True
     )
     chain = LLMChain(llm=model, output_parser=output_parser, prompt=prompt, verbose=True)
@@ -373,3 +459,20 @@ def testing_chain(prompt, output_parser):
     model = FakeListLLM(responses=responses)
     chain = LLMChain(llm=model, prompt=prompt, output_parser=output_parser, verbose=True)
     return chain
+
+
+def generate_answer(job_role, question):
+    template = "You are an candidate giving an interview for the role of {job_role}. You are neither too good nor too bad. You are an average candidate. Given the question asked by the interviewer, generate an average answer which should neither be good nor bad.\n\n"
+    human_template = "Question: {question}\nAverage answer:"
+    prompt = ChatPromptTemplate.from_messages(
+            [SystemMessagePromptTemplate.from_template(template),
+             HumanMessagePromptTemplate.from_template(human_template)]
+        )
+    model = OpenAI(
+        model_name="gpt-3.5-turbo",
+        temperature=0.2,
+        verbose=True
+    )
+    chain = LLMChain(llm=model, prompt=prompt, verbose=True)
+    response = chain({'job_role': job_role, 'question': question})
+    return response['text']
