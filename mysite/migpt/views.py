@@ -102,7 +102,7 @@ def update_profile(request):
             return redirect("migpt:update_profile")
     else:
         form = UserProfileForm(instance=userprofile)
-    return render(request, 'migpt/edit_profile.html', {'form': form})
+    return render(request, 'migpt/interview_interface.html', {'form': form})
 
 
 @login_required
@@ -154,6 +154,7 @@ def start_interview(request):
                 raise Exception("Invalid duration")
 
             questions = utils.generate_questions(interview, number_of_questions)
+            # questions = ["question 1", "question 2"]
             print(len(questions), "questions generated")
             pos = 1
             for question in questions:
@@ -161,7 +162,7 @@ def start_interview(request):
                 models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
                                                         session=interview, pos=pos)
                 pos += 1
-        context = {}
+        context = {'user_initial': interview.user.first_name[0]}
         return render(request, 'migpt/interview_interface.html', context)
     else:
         return HttpResponse("Interview Over")
