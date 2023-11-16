@@ -94,3 +94,116 @@ $(document).ready(function () {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const personBox = document.getElementById('candidate-box');
+    const personName = document.getElementById('candidate-name');
+    const videoContainer = document.getElementById('videoContainer');
+    const videoElement = document.getElementById('videoElement');
+
+    personBox.addEventListener('mouseenter', () => {
+        disableVideoButton.style.display = 'block';
+        enableVideoButton.style.display = 'block';
+    });
+
+    personBox.addEventListener('mouseleave', () => {
+        disableVideoButton.style.display = 'none';
+        enableVideoButton.style.display = 'none';
+    });
+
+    disableVideoButton.addEventListener('click', async () => {
+    const videoElement = document.getElementById('videoElement');
+
+    if (videoElement.srcObject) {
+        const tracks = videoElement.srcObject.getTracks();
+
+        // Suspend the video element to try to stop the camera feed
+        videoElement.pause();
+        
+        // Stop each track and wait for the promises to resolve
+        await Promise.all(tracks.map(track => track.stop()));
+
+        // Set srcObject to null after stopping the tracks
+        videoElement.srcObject = null;
+        videoContainer.style.display = 'none'; // Hide the video container
+        personName.style.display = 'flex'; // Show the person's name
+    }
+});
+    enableVideoButton.addEventListener('click', () => {
+        handleVideoPermission();
+    });
+
+    function handleVideoPermission() {
+        navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+            // If permission is granted, display the video
+            personName.style.display = 'none';
+            videoContainer.style.display = 'block';
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    videoElement.srcObject = stream;
+                })
+                .catch((error) => {
+                    console.error('Error accessing the camera:', error);
+                });
+        })
+        .catch(() => {
+            // If permission is not granted, display the person's name
+            personName.style.display = 'flex';
+            videoContainer.style.display = 'none';
+        });
+    }
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        handleVideoPermission();
+    } else {
+        alert('Sorry, camera access is not supported in this browser.');
+    }
+});
+
+document.getElementById('menuBtn').addEventListener('click', function() {
+    var menu = document.querySelector('.dropdown-content');
+  menu.classList.toggle('show');
+    });
+
+document.addEventListener('click', function(event) {
+var menu = document.querySelector('.dropdown-content');
+if (menu.classList.contains('show') && event.target.closest('.menu') === null) {
+    menu.classList.remove('show');
+}
+});
+
+const messageInput = document.getElementById('message-input');
+const voiceInputIcon = document.getElementById('voice-input-icon');
+let recognition;
+
+// Function to start voice recognition
+function startRecognition() {
+  recognition = new webkitSpeechRecognition(); // Create a new instance
+  recognition.lang = 'en-US'; // Set the language
+  
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    messageInput.value += transcript + ' '; // Append recognized text
+  };
+  
+  recognition.onend = function() {
+    recognition.stop();
+    startRecognition(); // Restart recognition on end (continuous listening)
+  };
+  
+  recognition.start(); // Start listening
+}
+
+// Toggle voice recognition on icon click
+voiceInputIcon.addEventListener('click', function() {
+  if (!recognition) {
+    voiceInputIcon.classList.remove('fa-microphone');
+    voiceInputIcon.classList.add('fa-microphone-slash');
+    startRecognition();
+  } else {
+    voiceInputIcon.classList.remove('fa-microphone-slash');
+    voiceInputIcon.classList.add('fa-microphone');
+    recognition.stop();
+    recognition = undefined;
+  }
+});
