@@ -38,7 +38,7 @@
   background-color: #424242;
 }
 
-.input-container {
+.chat-input-container {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -67,44 +67,6 @@
 
 #send-button:hover {
   background-color: #0056b3;
-}
-
-.navbar-section {
-  color: black;
-  padding: 10px 40px 10px 40px;
-  font-size: 18px;
-  border: 1px solid #e7e7e7;
-  margin-bottom: 80px;
-}
-
-.nav-dropdown {
-  max-width: 100%;
-}
-
-.navbar-container {
-  margin-left: 20%;
-  margin-right: 20%;
-}
-
-.navbar-container a {
-  color: black;
-  text-decoration: none;
-}
-
-.navbar-container ul {
-  list-style-type: none;
-}
-
-.navbar-container ul li {
-  padding: 10px;
-}
-
-.navbar-left {}
-
-.navbar-right {
-  display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 0px;
 }
 
 .person-box {
@@ -189,25 +151,6 @@
 }
 
 .interview-menu {
-  padding: 20px;
-}
-
-.interview-menu .btn {
-  padding: 5px 10px;
-  border: none;
-  background-color: #91bc0e;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.interview-menu .btn:hover {
-  background-color: #536e03;
-  color: white;
-}
-
-.menu {
   position: relative;
   display: inline-block;
 }
@@ -216,7 +159,7 @@
   cursor: pointer;
 }
 
-.dropdown-content {
+.interview-menu-expand {
   display: none;
   position: absolute;
   background-color: rgba(255, 255, 255, 1);
@@ -233,20 +176,20 @@
   left: -60px;
 }
 
-.dropdown-content ul {
+.interview-menu-expand ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
-.dropdown-content li a {
+.interview-menu-expand li a {
   display: block;
   padding: 10px;
   text-decoration: none;
   color: black;
 }
 
-.dropdown-content li a:hover {
+.interview-menu-expand li a:hover {
   background-color: rgba(157, 159, 160, 0.4);
 }
 

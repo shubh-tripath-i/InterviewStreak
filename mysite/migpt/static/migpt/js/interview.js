@@ -161,13 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.getElementById('menuBtn').addEventListener('click', function() {
-    var menu = document.querySelector('.dropdown-content');
+    var menu = document.querySelector('.interview-menu-expand');
   menu.classList.toggle('show');
     });
 
 document.addEventListener('click', function(event) {
-var menu = document.querySelector('.dropdown-content');
-if (menu.classList.contains('show') && event.target.closest('.menu') === null) {
+var menu = document.querySelector('.interview-menu-expand');
+if (menu.classList.contains('show') && event.target.closest('.interview-menu') === null) {
     menu.classList.remove('show');
 }
 });
