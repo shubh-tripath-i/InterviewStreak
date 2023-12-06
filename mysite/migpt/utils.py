@@ -15,6 +15,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate
 )
 from langchain.callbacks import get_openai_callback
+import threading
 
 
 class AnswerReview(BaseModel):
@@ -61,14 +62,22 @@ def complete_interview(interview_id):
     if not interview.is_complete:
         interview.is_complete = True
         interview.save()
-        # generate_review(interview)
-        # generate_answer_review(interview)
+        thread = threading.Thread(target=complete_review, args=[interview])
+        thread.start()
+
+
+def complete_review(interview):
+    #generate_review(interview)
+    # generate_answer_review(interview)
+    # Send mail to user that review is generated
+    interview.review_generated = True
+    interview.save()
 
 
 def generate_answer_review(interview):
     prompt = prompt_generator(interview, "answer_review_generation")
     output_parser = PydanticOutputParser(pydantic_object=AnswerReview)
-    chain = make_review_generation_chain(prompt, output_parser, model_name="gpt-3.5-turbo")
+    chain = make_review_generation_chain(prompt, output_parser, model_name="gpt-3.5-turbo-0613")
     questions = models.UserQuestionAnswer.objects.filter(user=interview.user, session=interview,
                                                          is_asked=True, answer__isnull=False)
     for question in questions:
@@ -98,7 +107,7 @@ def generate_review(interview):
     question_answer = ""
     for question in questions:
         question_answer += f"Question: {question.question}\nCandidate's Answer: {question.answer}\n\n"
-    chain = make_review_generation_chain(prompt, output_parser, model_name="gpt-3.5-turbo-16k")
+    chain = make_review_generation_chain(prompt, output_parser, model_name="gpt-3.5-turbo-16k-0613")
     with get_openai_callback() as cb:
         response = chain({'question_answer': question_answer,
                         'format_instructions': output_parser.get_format_instructions()})
@@ -426,7 +435,7 @@ def generate_cross_question(interview, question, number_of_cross_questions, impo
 
 def make_question_generation_chain(prompt, output_parser):
     model = OpenAI(
-        model_name="gpt-3.5-turbo",
+        model_name="gpt-3.5-turbo-0613",
         temperature=0.6,
         verbose=True
     )
@@ -446,7 +455,7 @@ def make_review_generation_chain(prompt, output_parser, model_name):
 
 def cross_question_chain(prompt, output_parser):
     model = OpenAI(
-        model_name="gpt-3.5-turbo",
+        model_name="gpt-3.5-turbo-0613",
         temperature=0.2,
         verbose=True
     )
@@ -469,7 +478,7 @@ def generate_answer(job_role, question):
              HumanMessagePromptTemplate.from_template(human_template)]
         )
     model = OpenAI(
-        model_name="gpt-3.5-turbo",
+        model_name="gpt-3.5-turbo-0613",
         temperature=0.2,
         verbose=True
     )

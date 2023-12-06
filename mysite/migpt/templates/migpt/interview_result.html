@@ -1,5 +1,7 @@
 {% include "migpt/base.html" %}
 
+{% if interview.is_complete %}
+{% if interview.review_generated %}
 <div class="interview-result">
   <div class="overall-review">
     <h2 class="interview-heading">{{ interview.job_role }}</h2>
@@ -64,7 +66,7 @@
     <div class="question-details hidden">
       <!-- Details initially hidden -->
       <div class="review-items">
-        <h2>Candidate's Answer</h2>
+        <h2>Your Answer</h2>
         <p>{{ question.answer }}</p>
       </div>
       <div class="review-items">
@@ -87,3 +89,36 @@
   </div>
   {% endfor %}
 </div>
+{% else %}
+<div class="processing-overlay" id="processingOverlay">
+  <div class="processing-content">
+    <div class="processing-symbol"></div>
+    <p class="processing-text">Review generation is under process. Please check back in a while.</p>
+  </div>
+</div>
+<script>
+  function checkReviewGenerated() {
+      fetch('/check-review-status/?interview_id={{ interview.id }}')  // Endpoint to check if review is generated
+          .then(response => response.json())
+          .then(data => {
+              if (data.review_generated) {
+                  window.location.reload(true);
+              } else {
+                  setTimeout(checkReviewGenerated, 60000);
+              }
+          })
+          .catch(error => console.error('Error:', error));
+  }
+
+  checkReviewGenerated();
+</script>
+{% endif %}
+{% else %}
+<div class="interview-result">
+  <div class="overall-review">
+    <h2 class="interview-heading">{{ interview.job_role }}</h2>
+    <h4 class="interview-heading">Interview was not completed.</h4>
+    <h4 class="interview-heading"><a href="{% url 'migpt:end_interview' %}?incomplete_interview_id={{ interview.id }}">Generate Review?</a></h4>
+  </div>
+</div>
+{% endif %}

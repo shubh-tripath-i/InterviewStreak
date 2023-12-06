@@ -90,12 +90,12 @@ class UserInterview(models.Model):
     score = models.PositiveIntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    review = models.TextField(max_length=1024, null=True, blank=True)
-    strong_points = models.TextField(max_length=1024, null=True, blank=True)
-    weak_points = models.TextField(max_length=1024, null=True, blank=True)
-    improvements = models.TextField(max_length=1024, null=True, blank=True)
+    review = models.TextField(null=True, blank=True)
+    strong_points = models.TextField(null=True, blank=True)
+    weak_points = models.TextField(null=True, blank=True)
+    improvements = models.TextField(null=True, blank=True)
     is_selected = models.BooleanField(null=True)
-    reason_selection = models.TextField(max_length=1024, null=True, blank=True)
+    reason_selection = models.TextField(null=True, blank=True)
     company = models.CharField(max_length=128, null=True, blank=True)
     job_role = models.CharField(max_length=128)
     interview_round = models.PositiveIntegerField(default=1,
@@ -121,6 +121,7 @@ class UserInterview(models.Model):
     auto_answer = models.BooleanField(default=False,
                                       help_text="Automatically answers all question using chatgpt.")
     is_complete = models.BooleanField(default=False)
+    review_generated = models.BooleanField(default=False)
     cost_question_generation = models.FloatField(default=0.0)
     cost_review = models.FloatField(default=0.0)
     cost_answer_review = models.FloatField(default=0.0)

@@ -23,4 +23,5 @@ urlpatterns = [
     path('accounts/reset/done/', PasswordResetCompleteView.as_view(template_name='migpt/password_reset_complete.html'), name='password_reset_complete'),
     path('display-interview-result/', views.display_result, name='display_result'),
     path('get-answer-automatically/', views.get_answer_automatically, name='get_answer_automatically'),
+    path('check-review-status/', views.check_review_status, name="check_review_status")
 ]
