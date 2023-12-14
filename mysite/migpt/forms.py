@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from migpt import models
 from django.utils.text import slugify
-from django.core.validators import MaxLengthValidator
+
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)

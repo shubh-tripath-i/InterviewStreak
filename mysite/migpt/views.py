@@ -19,20 +19,6 @@ from django import forms
 from datetime import timedelta
 
 
-class CustomPasswordResetView(PasswordResetView):
-    def form_valid(self, form):
-        email = form.cleaned_data['email']
-        User = get_user_model()
-
-        try:
-            User.objects.get(email=email)
-        except User.DoesNotExist:
-            # Email doesn't exist in the database; show an error message
-            return HttpResponse('Email does not exist')
-
-        return super().form_valid(form)
-
-
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
