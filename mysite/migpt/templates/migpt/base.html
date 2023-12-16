@@ -23,17 +23,17 @@
         <link href="{% static 'migpt/css/responsive.css' %}" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="migpt/css/bootstrap.css" />
         <script src="{% static 'migpt/js/bootstrap.js' %}"></script>
-        <script src="{% static 'migpt/js/jquery-3.4.1.min.js' %}"></script>
+        <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
         
     </head>
     <body>
             <header class="header_section">
                 <div class="container">
                     <nav class="navbar navbar-expand-lg custom_nav-container ">
-                        <a class="navbar-brand" href="index.html">
+                        <a class="navbar-brand" href="{% url 'migpt:index' %}">
                             <img src="{% static 'migpt/images/ai.png' %}" alt="">
                             <span>
-                            MIGPT
+                            CrossQ
                             </span>
                         </a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,15 +49,11 @@
                                 <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
                                 </li>
                                 <li class="nav-item">
-                                <a class="nav-link" href="Product.html"> Product</a>
+                                <a class="nav-link" href="{% url 'migpt:create_interview_session' %}">Start Interview </a>
                                 </li>
-                                <li class="nav-item">
-                                <a class="nav-link" href="about.html"> About US </a>
-                                </li>
-                                <li class="nav-item">
-                                <a class="nav-link" href="contact.html">Contact </a>
-                                </li>
-                                
+                                 <li class="nav-item">
+                                <a class="nav-link" href="{% url 'migpt:contact' %}">Contact</a>
+                                </li>                                
                                   {% if not user.is_authenticated %}
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'login' %}">Log IN</a>
@@ -70,7 +66,7 @@
                                         <div class="sub-menu">
                                             <div class="user-info">
                                                 <img class="user-pic" src="{% static 'migpt/images/profile.png' %}" alt="User Profile Icon">
-                                                <h5>user name</h5>
+                                                <h5>{{ user.first_name }}</h5>
                                             </div>
                                             <hr>
                                             <a href="{% url 'migpt:view_profile' %}" class="sub-menu-link">

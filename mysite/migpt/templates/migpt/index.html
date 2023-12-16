@@ -21,8 +21,8 @@
                   <p>
                     Step into the future of interview preparation with our AI-driven mock interview platform. Practice and refine your skills through realistic simulations tailored to various industries and job roles
                   </p>
-                  <a href="" class="">
-                    Explore
+                  <a href="{% url 'migpt:create_interview_session' %}" class="">
+                    Start Interview
                 </div>
               </div>
             </div>
@@ -32,129 +32,7 @@
           <!-- end slider section -->
       </div>
         <!--service section-->
-        <section class="service_section layout_padding">
-            <div class="container">
-              <div class="heading_container">
-                <h2>
-                  Our Services
-                </h2>
-                <img src="images/plug.png" alt="">
-              </div>
         
-              <div class="service_container">
-                <div class="box">
-                  <div class="img-box">
-                    <img src="images/s1.png" class="img1" alt="">
-                  </div>
-                  <div class="detail-box">
-                    <h5>
-                      Equipment installation
-                    </h5>
-                    <p>
-                      There are many variations of passages of Lorem Ipsum available,
-                    </p>
-                  </div>
-                </div>
-                <div class="box active">
-                  <div class="img-box">
-                    <img src="images/s2.png" class="img1" alt="">
-                  </div>
-                  <div class="detail-box">
-                    <h5>
-                      Windmill Energy
-                    </h5>
-                    <p>
-                      There are many variations of passages of Lorem Ipsum available,
-                    </p>
-                  </div>
-                </div>
-                <div class="box">
-                  <div class="img-box">
-                    <img src="images/s3.png" class="img1" alt="">
-                  </div>
-                  <div class="detail-box">
-                    <h5>
-                      Equipment Maintenance
-                    </h5>
-                    <p>
-                      There are many variations of passages of Lorem Ipsum available,
-                    </p>
-                  </div>
-                </div>
-                <div class="box ">
-                  <div class="img-box">
-                    <img src="images/s4.png" class="img1" alt="">
-                  </div>
-                  <div class="detail-box">
-                    <h5>
-                      Offshore Engineering
-                    </h5>
-                    <p>
-                      There are many variations of passages of Lorem Ipsum available,
-                    </p>
-                  </div>
-                </div>
-                <div class="box">
-                  <div class="img-box">
-                    <img src="images/s5.png" class="img1" alt="">
-                  </div>
-                  <div class="detail-box">
-                    <h5>
-                      Electrical Wiring
-                    </h5>
-                    <p>
-                      There are many variations of passages of Lorem Ipsum available,
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="btn-box">
-                <a href="">
-                  Read More
-                </a>
-              </div>
-            </div>
-          </section>
-        <!-- end service section -->
-
-        <section class="about_section layout_padding">
-            <div class="container">
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="detail-box">
-                    <div class="heading_container">
-                      <h2>
-                        About Us
-                      </h2>
-                      <img src="images/aboutlogo.jpg" alt="">
-                    </div>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                      enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                      nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                      in reprehenderit in voluptate velit
-                    </p>
-                    <a href="">
-                      Read More
-                    </a>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="img_container">
-                    <div class="img-box b1">
-                      <img src="images/about2.png" alt="" />
-                    </div>
-                    <div class="img-box b2">
-                      <img src="images/about1.jpg" alt="" />
-                    </div>
-                  </div>
-        
-                </div>
-        
-              </div>
-            </div>
-          </section>
         <script>
             var JS_DATA = {
                 'csrf_token' : '{{ csrf_token }}',

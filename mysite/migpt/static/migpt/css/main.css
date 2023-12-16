@@ -225,7 +225,7 @@ a:focus {
   max-height: 400px;
 }
 .sub-menu{
-  background-color: rgb(197, 181, 220);
+  background-color: rgb(230, 227, 233);
   padding: 20px;
   margin: 10px;
   
@@ -771,7 +771,8 @@ a:focus {
 
 .form-container {
   width: 300px;           /* Set this to your convenience */
-  height: 400px;          /* Set this to your convenience */
+  height: 400px;
+  margin:10px;          /* Set this to your convenience */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -783,6 +784,7 @@ a:focus {
   width: 400px; /* Increased container width */
   justify-content: center;
   align-items: center;
+  overflow: auto;
 }
 .signup-container {
   width: 600px;           /* Set this to your convenience */

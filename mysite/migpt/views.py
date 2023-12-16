@@ -80,13 +80,18 @@ def index(request):
     }
     return render(request, 'migpt/index.html', context)
 
+def contact(request):
+    context = {
+    }
+    return render(request, 'migpt/contact.html', context)
 
 @login_required
 def view_profile(request):
     user = User.objects.get(id=request.user.id)
     interviews = models.UserInterview.objects.filter(user=user).order_by('-created_at')
     context = {"name": user.first_name + user.last_name,
-               "interviews": interviews
+               "interviews": interviews,
+               "email":user.email
                }
     return render(request, 'migpt/view_profile.html', context)
 
