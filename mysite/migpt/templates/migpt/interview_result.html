@@ -1,25 +1,124 @@
 {% include "migpt/base.html" %}
-<b>Total number of questions: {{ num_questions }}</b>
-<div class="card">
-    <ul>
-        <li>Review: {{ interview.review }}</li>
-        <li>Strong Points: {{ interview.strong_points }}</li>
-        <li>Weak Points: {{ interview.weak_points }}</li>
-        <li>Improvements: {{ interview.improvements }}</li>
-        <li>If Selected: {{ interview.is_selected }}</li>
-        <li>Reason: {{ interview.reason_selection }}</li>
-    </ul>
+
+{% if interview.is_complete %}
+{% if interview.review_generated %}
+<div class="interview-result">
+  <div class="overall-review">
+    <h2 class="interview-heading">{{ interview.job_role }}</h2>
+    {% if interview.company %}
+    <div class="review-items">
+      <h2>Company</h2>
+      <p>{{ interview.company }}</p>
+    </div>
+    {% endif %}
+    {% if interview.job_description %}
+    <div class="review-items">
+      <h2>Job Description</h2>
+      <p>{{ interview.job_description }}</p>
+    </div>
+    {% endif %}
+    <div class="review-items">
+      <h2>Review</h2>
+      <p>{{ interview.review }}</p>
+    </div>
+    <div class="review-items">
+      <h2>Strong Points</h2>
+      <p>{{ interview.strong_points }}</p>
+    </div>
+    <div class="review-items">
+      <h2>Weak Points</h2>
+      <p>{{ interview.weak_points }}</p>
+    </div>
+    <div class="review-items">
+      <h2>Improvements</h2>
+      <p>{{ interview.improvements }}</p>
+    </div>
+    {% if interview.is_selected %}
+    <div class="review-items">
+      <h2>Is {{ interview.user.first_name }} selected?</h2>
+      <p>Yes!</p>
+    </div>
+    <div class="review-items">
+      <h2>Reason for Selection</h2>
+      <p>{{ interview.reason_selection }}</p>
+    </div>
+    {% else %}
+    <div class="review-items">
+      <h2>Is {{ interview.user.first_name }} selected?</h2>
+      <p>Unfortunately not!</p>
+    </div>
+    <div class="review-items">
+      <h2>Reason for Rejection</h2>
+      <p>{{ interview.reason_selection }}</p>
+    </div>
+    {% endif %}
+  </div>
 </div>
 
-{% for question in questions %}
-<div class="card">
-    <ul>
-        <li>Question: {{ question.question }}</li>
-        <li>User Anwer: {{ question.answer }}</li>
-        <li>Review: {{ question.review }}</li>
-        <li>Improvements: {{ question.improvements }}</li>
-        <li>Score: {{ question.score }}</li>
-        <li>Perfect Answer: {{ question.perfect_answer }}</li>
-    </ul>
+<div class="questions-section">
+  <h2 class="interview-heading">Answer Review</h2>
+  {% for question in questions %}
+  <div class="question-item">
+    <div class="question-header">
+      <h2 class="question-title">{{ question.question }}</h2>
+      <span class="dropdown-symbol">▼</span>
+    </div>
+    <div class="question-details hidden">
+      <!-- Details initially hidden -->
+      <div class="review-items">
+        <h2>Your Answer</h2>
+        <p>{{ question.answer }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Score</h2>
+        <p>{{ question.score }}/10</p>
+      </div>
+      <div class="review-items">
+        <h2>Review</h2>
+        <p>{{ question.review }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Improvements</h2>
+        <p>{{ question.improvements }}</p>
+      </div>
+      <div class="review-items">
+        <h2>Expert Answer</h2>
+        <p>{{ question.perfect_answer }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div>
-{% endfor %}
+{% else %}
+<div class="processing-overlay" id="processingOverlay">
+  <div class="processing-content">
+    <div class="processing-symbol"></div>
+    <p class="processing-text">Review generation is under process. Please check back in a while.</p>
+  </div>
+</div>
+<script>
+  function checkReviewGenerated() {
+      fetch('/check-review-status/?interview_id={{ interview.id }}')  // Endpoint to check if review is generated
+          .then(response => response.json())
+          .then(data => {
+              if (data.review_generated) {
+                  window.location.reload(true);
+              } else {
+                  setTimeout(checkReviewGenerated, 60000);
+              }
+          })
+          .catch(error => console.error('Error:', error));
+  }
+
+  checkReviewGenerated();
+</script>
+{% endif %}
+{% else %}
+<div class="interview-result">
+  <div class="overall-review">
+    <h2 class="interview-heading">{{ interview.job_role }}</h2>
+    <h4 class="interview-heading">Interview was not completed.</h4>
+    <h4 class="interview-heading"><a href="{% url 'migpt:end_interview' %}?incomplete_interview_id={{ interview.id }}">Generate Review?</a></h4>
+  </div>
+</div>
+{% endif %}

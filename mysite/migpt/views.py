@@ -19,20 +19,6 @@ from django import forms
 from datetime import timedelta
 
 
-class CustomPasswordResetView(PasswordResetView):
-    def form_valid(self, form):
-        email = form.cleaned_data['email']
-        User = get_user_model()
-
-        try:
-            User.objects.get(email=email)
-        except User.DoesNotExist:
-            # Email doesn't exist in the database; show an error message
-            return HttpResponse('Email does not exist')
-
-        return super().form_valid(form)
-
-
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -173,12 +159,19 @@ def start_interview(request):
         return HttpResponse("Interview Over")
 
 
+def check_review_status(request):
+    interview_id = request.GET.get('interview_id')
+    interview = models.UserInterview.objects.get(id=interview_id)
+    return JsonResponse({'review_generated': interview.review_generated})
+
+
 @login_required
 def end_interview(request):
-    interview_id = request.session.get('interview_id')
+    interview_id = request.GET.get('incomplete_interview_id')
+    if not interview_id:
+        interview_id = request.session.get('interview_id')
     utils.complete_interview(interview_id)
     url = reverse('migpt:display_result') + f'?interview={interview_id}'
-    print(url)
     return redirect(url)
 
 

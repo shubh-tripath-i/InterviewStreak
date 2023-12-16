@@ -9,7 +9,7 @@ $(document).ready(function () {
     const messageInput = document.getElementById("message-input");
     const sendButton = document.getElementById("send-button");
 
-    messageInput.addEventListener("keydown", function(event) {
+    messageInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevents the default behavior of the Enter key (e.g., new line in a textarea)
             sendButton.click(); // Trigger a click event on the send button
@@ -25,7 +25,7 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.question) {
                     addMessage(data.question, true);
-                    if (data.auto_answer){
+                    if (data.auto_answer) {
                         getAutoAnswer();
                     }
                 } else {
@@ -40,6 +40,7 @@ $(document).ready(function () {
         });
     }
 
+    //Function to auto answer the question from gpt
     function getAutoAnswer() {
         $.ajax({
             url: "/get-answer-automatically/",
@@ -49,7 +50,7 @@ $(document).ready(function () {
                 if (data.success) {
                     const userAnswerValue = data.answer
                     $("#message-input").val(userAnswerValue);
-                    $("#send-button").trigger("click"); 
+                    $("#send-button").trigger("click");
                 } else {
                     console.error("Failed to get answer automatically.");
                 }
@@ -93,9 +94,8 @@ $(document).ready(function () {
             });
         }
     });
-});
 
-document.addEventListener('DOMContentLoaded', () => {
+    //Add video element and it's functionalities
     const personBox = document.getElementById('candidate-box');
     const personName = document.getElementById('candidate-name');
     const videoContainer = document.getElementById('videoContainer');
@@ -112,23 +112,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     disableVideoButton.addEventListener('click', async () => {
-    const videoElement = document.getElementById('videoElement');
+        const videoElement = document.getElementById('videoElement');
 
-    if (videoElement.srcObject) {
-        const tracks = videoElement.srcObject.getTracks();
+        if (videoElement.srcObject) {
+            const tracks = videoElement.srcObject.getTracks();
 
-        // Suspend the video element to try to stop the camera feed
-        videoElement.pause();
-        
-        // Stop each track and wait for the promises to resolve
-        await Promise.all(tracks.map(track => track.stop()));
+            // Suspend the video element to try to stop the camera feed
+            videoElement.pause();
 
-        // Set srcObject to null after stopping the tracks
-        videoElement.srcObject = null;
-        videoContainer.style.display = 'none'; // Hide the video container
-        personName.style.display = 'flex'; // Show the person's name
-    }
-});
+            // Stop each track and wait for the promises to resolve
+            await Promise.all(tracks.map(track => track.stop()));
+
+            // Set srcObject to null after stopping the tracks
+            videoElement.srcObject = null;
+            videoContainer.style.display = 'none'; // Hide the video container
+            personName.style.display = 'flex'; // Show the person's name
+        }
+    });
     enableVideoButton.addEventListener('click', () => {
         handleVideoPermission();
     });
@@ -146,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Error accessing the camera:', error);
                 });
         })
-        .catch(() => {
-            // If permission is not granted, display the person's name
-            personName.style.display = 'flex';
-            videoContainer.style.display = 'none';
-        });
+            .catch(() => {
+                // If permission is not granted, display the person's name
+                personName.style.display = 'flex';
+                videoContainer.style.display = 'none';
+            });
     }
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -158,52 +158,53 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         alert('Sorry, camera access is not supported in this browser.');
     }
-});
 
-document.getElementById('menuBtn').addEventListener('click', function() {
-    var menu = document.querySelector('.dropdown-content');
-  menu.classList.toggle('show');
+    //Display menu in interview
+    document.getElementById('menuBtn').addEventListener('click', function () {
+        var menu = document.querySelector('.interview-menu-expand');
+        menu.classList.toggle('show');
     });
 
-document.addEventListener('click', function(event) {
-var menu = document.querySelector('.dropdown-content');
-if (menu.classList.contains('show') && event.target.closest('.menu') === null) {
-    menu.classList.remove('show');
-}
-});
+    document.addEventListener('click', function (event) {
+        var menu = document.querySelector('.interview-menu-expand');
+        if (menu.classList.contains('show') && event.target.closest('.interview-menu') === null) {
+            menu.classList.remove('show');
+        }
+    });
 
-const messageInput = document.getElementById('message-input');
-const voiceInputIcon = document.getElementById('voice-input-icon');
-let recognition;
+    //Add voice input in interface
+    const voiceInputIcon = document.getElementById('voice-input-icon');
+    let recognition;
 
-// Function to start voice recognition
-function startRecognition() {
-  recognition = new webkitSpeechRecognition(); // Create a new instance
-  recognition.lang = 'en-US'; // Set the language
-  
-  recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    messageInput.value += transcript + ' '; // Append recognized text
-  };
-  
-  recognition.onend = function() {
-    recognition.stop();
-    startRecognition(); // Restart recognition on end (continuous listening)
-  };
-  
-  recognition.start(); // Start listening
-}
+    // Function to start voice recognition
+    function startRecognition() {
+        recognition = new webkitSpeechRecognition(); // Create a new instance
+        recognition.lang = 'en-US'; // Set the language
 
-// Toggle voice recognition on icon click
-voiceInputIcon.addEventListener('click', function() {
-  if (!recognition) {
-    voiceInputIcon.classList.remove('fa-microphone');
-    voiceInputIcon.classList.add('fa-microphone-slash');
-    startRecognition();
-  } else {
-    voiceInputIcon.classList.remove('fa-microphone-slash');
-    voiceInputIcon.classList.add('fa-microphone');
-    recognition.stop();
-    recognition = undefined;
-  }
+        recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript;
+            messageInput.value += transcript + ' '; // Append recognized text
+        };
+
+        recognition.onend = function () {
+            recognition.stop();
+            startRecognition(); // Restart recognition on end (continuous listening)
+        };
+
+        recognition.start(); // Start listening
+    }
+
+    // Toggle voice recognition on icon click
+    voiceInputIcon.addEventListener('click', function () {
+        if (!recognition) {
+            voiceInputIcon.classList.remove('fa-microphone');
+            voiceInputIcon.classList.add('fa-microphone-slash');
+            startRecognition();
+        } else {
+            voiceInputIcon.classList.remove('fa-microphone-slash');
+            voiceInputIcon.classList.add('fa-microphone');
+            recognition.stop();
+            recognition = undefined;
+        }
+    });
 });
