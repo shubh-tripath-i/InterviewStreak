@@ -49,3 +49,33 @@ class UserInterviewForm(forms.ModelForm):
         # fields = ('interview_round', 'subject', 'topic',
         #           'tools', 'difficulty_level', 'question_type', #'user_instructions',
         #           'tags', 'duration')
+
+
+class ContactUsForm(forms.ModelForm):
+    class Meta:
+        model = models.ContactUs
+        fields = ('name', 'email', 'contact_no', 'message')
+        labels = {
+            'name': 'Name',
+            'email': 'Email',
+            'contact_no': 'Phone Number (Include your country code)',
+            'message': 'Message',
+        }
+
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = models.Feedback
+        fields = ['question_rating', 'helpfulness_rating', 'interface_rating', 'reviewer_rating', 'website_rating', 'improvements', 'email']
+        labels = {
+            'question_rating': 'How were the questions?',
+            'helpfulness_rating': 'How helpful was the mock interview?',
+            'interface_rating': 'How was the interview interface/platform?',
+            'reviewer_rating': 'How helpful was the interview review?',
+            'website_rating': 'How is the flow of the website?',
+            'improvements': 'Suggestions for Improvements (if any)',
+            'email': 'Email'
+        }
+        widgets = {
+            'improvements': forms.Textarea(attrs={'rows': 3}),
+        }

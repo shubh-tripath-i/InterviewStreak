@@ -1,0 +1,120 @@
+{% load static %}
+{% include "migpt/base.html" %}
+<section class="contact_section layout_padding">
+  <div class="container ">
+    <div class="heading_container">
+      <h2>
+        Feedback
+      </h2>
+      <img src="{% static 'migpt/images/contact_logo.png' %}" alt="">
+    </div>
+  </div>
+  <div class="container">
+    {% if not complete %}
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'migpt:feedback' %}">
+            {% csrf_token %}
+            <div>
+              {{ form.question_rating.label_tag }} <span style="color:red">*</span>  {{ form.question_rating.errors }}
+              <div class="rate-box">
+                <input type="radio" name="question_rating" id="star0" value="1"/>
+                <label class="star" for="star0"></label>
+                <input type="radio" name="question_rating" id="star1" value="2"/>
+                <label class="star" for="star1"></label>
+                <input type="radio" name="question_rating" id="star2" value="3"/>
+                <label class="star" for="star2"></label>
+                <input type="radio" name="question_rating" id="star3" value="4"/>
+                <label class="star" for="star3"></label>
+                <input type="radio" name="question_rating" id="star4" value="5"/>
+                <label class="star" for="star4"></label>
+              </div>
+            </div>
+            <div>
+              {{ form.helpfulness_rating.label_tag }} <span style="color:red">*</span> {{ form.helpfulness_rating.errors }}
+              <div class="rate-box">
+                <input type="radio" name="helpfulness_rating" id="star5" value="1"/>
+                <label class="star" for="star5"></label>
+                <input type="radio" name="helpfulness_rating" id="star6" value="2"/>
+                <label class="star" for="star6"></label>
+                <input type="radio" name="helpfulness_rating" id="star7" value="3"/>
+                <label class="star" for="star7"></label>
+                <input type="radio" name="helpfulness_rating" id="star8" value="4"/>
+                <label class="star" for="star8"></label>
+                <input type="radio" name="helpfulness_rating" id="star9" value="5 "/>
+                <label class="star" for="star9"></label>
+              </div>
+            </div>
+            <div>
+              {{ form.interface_rating.label_tag }} <span style="color:red">*</span> {{ form.interface_rating.errors }}
+              <div class="rate-box">
+                <input type="radio" name="interface_rating" id="star10" value="1"/>
+                <label class="star" for="star10"></label>
+                <input type="radio" name="interface_rating" id="star11" value="2"/>
+                <label class="star" for="star11"></label>
+                <input type="radio" name="interface_rating" id="star12" value="3"/>
+                <label class="star" for="star12"></label>
+                <input type="radio" name="interface_rating" id="star13" value="4"/>
+                <label class="star" for="star13"></label>
+                <input type="radio" name="interface_rating" id="star14" value="5"/>
+                <label class="star" for="star14"></label>
+              </div>
+            </div>
+            <div>
+              {{ form.reviewer_rating.label_tag }} <span style="color:red">*</span> {{ form.reviewer_rating.errors }}
+              <div class="rate-box">
+                <input type="radio" name="reviewer_rating" id="star15" value="1"/>
+                <label class="star" for="star15"></label>
+                <input type="radio" name="reviewer_rating" id="star16" value="2"/>
+                <label class="star" for="star16"></label>
+                <input type="radio" name="reviewer_rating" id="star17" value="3"/>
+                <label class="star" for="star17"></label>
+                <input type="radio" name="reviewer_rating" id="star18" value="4"/>
+                <label class="star" for="star18"></label>
+                <input type="radio" name="reviewer_rating" id="star19" value="5"/>
+                <label class="star" for="star19"></label>
+              </div>
+            </div>
+            <div>
+              {{ form.website_rating.label_tag }} <span style="color:red">*</span> {{ form.website_rating.errors }}
+              <div class="rate-box">
+                <input type="radio" name="website_rating" id="star20" value="1"/>
+                <label class="star" for="star20"></label>
+                <input type="radio" name="website_rating" id="star21" value="2"/>
+                <label class="star" for="star21"></label>
+                <input type="radio" name="website_rating" id="star22" value="3"/>
+                <label class="star" for="star22"></label>
+                <input type="radio" name="website_rating" id="star23" value="4"/>
+                <label class="star" for="star23"></label>
+                <input type="radio" name="website_rating" id="star24" value="5"/>
+                <label class="star" for="star24"></label>
+              </div>
+            </div>
+            <div>
+              {{ form.improvements.label_tag }} {{ form.improvements.errors }}
+              {{ form.improvements }}
+            </div>
+            <div style="margin-top:20px;">
+                {{ form.email.label_tag }} {{ form.email.errors }}
+                {{ form.email }}
+              </div>
+            <div>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
+      </div>
+      <div class="col-md-6">
+        <div class="map_container">
+          <div class="map-responsive">
+            <img src="{% static 'migpt/images/contact.gif' %}" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div style="padding-top:30px;font-size:18px;">
+      Thanks for your feedback!
+    </div>
+    {% endif %}
+  </div>
+</section>

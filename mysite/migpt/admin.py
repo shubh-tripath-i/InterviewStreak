@@ -26,6 +26,19 @@ class UserQuestionAnswerAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'user__email']
 
 
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'contact_no', 'message', 'created_at', 'updated_at')
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['email']
+
+
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('email', 'question_rating', 'helpfulness_rating', 'interface_rating', 'reviewer_rating', 'website_rating', 'improvements', 'created_at', 'updated_at')
+    list_filter = ['created_at', 'updated_at']
+
+
 admin.site.register(models.UserProfile, UserProfileAdmin)
 admin.site.register(models.UserInterview, UserInterviewAdmin)
 admin.site.register(models.UserQuestionAnswer, UserQuestionAnswerAdmin)
+admin.site.register(models.ContactUs, ContactUsAdmin)
+admin.site.register(models.Feedback, FeedbackAdmin)

@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from migpt import utils
 from django.shortcuts import render, redirect
-from .forms import SignUpForm, UserProfileForm, UserInterviewForm
+from .forms import SignUpForm, UserProfileForm, UserInterviewForm, ContactUsForm, FeedbackForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from migpt import models
@@ -66,10 +66,38 @@ def index(request):
     }
     return render(request, 'migpt/index.html', context)
 
+
 def contact(request):
-    context = {
-    }
+    if request.method == 'POST':
+        form = ContactUsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context = {"complete": True}
+        else:
+            context = {"form": form,
+                       "complete": False}
+    else:
+        form = ContactUsForm()
+        context = {"form": form,
+                   "complete": False}
     return render(request, 'migpt/contact.html', context)
+
+
+def feedback(request):
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context = {"complete": True}
+        else:
+            context = {"form": form,
+                       "complete": False}
+    else:
+        form = FeedbackForm()
+        context = {"form": form,
+                   "complete": False}
+    return render(request, 'migpt/feedback.html', context)
+
 
 @login_required
 def view_profile(request):
@@ -77,7 +105,7 @@ def view_profile(request):
     interviews = models.UserInterview.objects.filter(user=user).order_by('-created_at')
     context = {"name": user.first_name + user.last_name,
                "interviews": interviews,
-               "email":user.email
+               "email": user.email
                }
     return render(request, 'migpt/view_profile.html', context)
 

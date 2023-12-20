@@ -1,119 +1,53 @@
 {% load static %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block head_title %}MIGPT{% endblock %}</title>
-    
-</head>
-<body class="sub_page">
-  {% include "migpt/base.html" %}
-  <!-- contact section -->
-
-  <section class="contact_section layout_padding">
-    <div class="container ">
-      <div class="heading_container">
-        <h2>
-          Contact Us
-        </h2>
-        <img src="{% static 'migpt/images/contact_logo.png' %}" alt="">
-      </div>
+{% include "migpt/base.html" %}
+<section class="contact_section layout_padding">
+  <div class="container ">
+    <div class="heading_container">
+      <h2>
+        Contact Us
+      </h2>
+      <img src="{% static 'migpt/images/contact_logo.png' %}" alt="">
     </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <form action="">
-            <div>
-              <input type="text" placeholder="Name" />
-            </div>
-            <div>
-              <input type="email" placeholder="Email" />
-            </div>
-            <div>
-              <input type="text" placeholder="Phone Number" />
-            </div>
-            <div>
-              <input type="text" class="message-box" placeholder="Message" />
-            </div>
-            <div class="d-flex ">
-              <button>
-                SEND
-              </button>
-            </div>
-          </form>
-        </div>
-        <div class="col-md-6">
-          <div class="map_container">
-            <div class="map-responsive">
-              <img src="{% static 'migpt/images/contact.gif' %}" alt="">
-            </div>
+  </div>
+  <div class="container">
+    {% if not complete %}
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'migpt:contact' %}">
+          {% csrf_token %}
+          <div>
+            {{ form.name.label_tag }} <span style="color:red">*</span> {{ form.name.errors }}
+            {{ form.name }}
+          </div>
+          <div>
+            {{ form.email.label_tag }} <span style="color:red">*</span> {{ form.email.errors }}
+            {{ form.email }}
+          </div>
+          <div>
+            {{ form.contact_no.label_tag }} {{ form.contact_no.errors }}
+            {{ form.contact_no }}
+          </div>
+          <div>
+            {{ form.message.label_tag }} <span style="color:red">*</span> {{ form.message.errors }}
+            {{ form.message }}
+          </div>
+          <div class="d-flex">
+            <button type="submit">SEND</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <div class="map_container">
+          <div class="map-responsive">
+            <img src="{% static 'migpt/images/contact.gif' %}" alt="">
           </div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- end contact section -->
-
-
-  <!-- info section -->
-
-  <section class="info_section layout_padding">
-    <div class="container">
-      <div class="info_contact">
-        <div class="row">
-          <div class="col-md-4">
-            <a href="">
-              <img src="{% static 'migpt/images/location-white.png' %}" alt="">
-              <span>
-                Passages of Lorem Ipsum available
-              </span>
-            </a>
-          </div>
-          <div class="col-md-4">
-            <a href="">
-              <img src="{% static 'migpt/images/telephone-white.png' %}" alt="">
-              <span>
-                Call : +012334567890
-              </span>
-            </a>
-          </div>
-          <div class="col-md-4">
-            <a href="">
-              <img src="{% static 'migpt/images/envelope-white.png' %}" alt="">
-              <span>
-                demo@gmail.com
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-
+    {% else %}
+    <div style="padding-top:30px;font-size:18px;">
+      Your response has been submitted. We will get back to you soon.
     </div>
-  </section>
-
-  <!-- end info section -->
-
-  <!-- footer section -->
-  <footer class="container-fluid footer_section">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-7 col-md-9 mx-auto">
-          <p>
-            &copy; 2023 All Rights Reserved By
-            <a href="{% url 'migpt:index' %}">CrossQ</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <!-- footer section -->
-
-
-  <script src="js/jquery-3.4.1.min.js"></script>
-  <script src="js/bootstrap.js"></script>
-
-</body>
-
-</html>
+    {% endif %}
+  </div>
+</section>
