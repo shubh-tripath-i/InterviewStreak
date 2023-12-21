@@ -1,22 +1,38 @@
-<!DOCTYPE html>
 {% load static %}
-<html>
-<head>
-    <title>SignUP</title>
-    
-</head>
-<body>
-    <div class="hero_area">
-    {% include "migpt/base.html" %}
-        <div class="signup-container">
-            <h2>Sign UP</h2>
-            <form method="POST">
-                {% csrf_token %}
-                {{ form }}                    
+{% include "migpt/base.html" %}
+
+<div class="hero_area">
+    <div class="signup-container">
+        <h2 class="form-heading">Sign UP</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div>
+                First Name: <span style="color:red">*</span>
+            </div>
+            {{ form.first_name.errors }}
+            {{ form.first_name }}
+            <div>
+                Last Name: <span style="color:red">*</span>
+            </div>
+            {{ form.last_name.errors }}
+            {{ form.last_name }}
+            <div>
+                Email: <span style="color:red">*</span>
+            </div>
+            {{ form.email.errors }}
+            {{ form.email }}
+            <div>
+                Password: <span style="color:red">*</span>
+            </div>
+            {{ form.password1.errors }}
+            {{ form.password1 }}
+            <div>
+                Confirm your password: <span style="color:red">*</span>
+            </div>
+            {{ form.password2.errors }}
+            {{ form.password2 }}
             <button class="btn btn-primary" type="submit">Register</button>
-            </form>
-            <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>
-        </div>
+        </form>
+        <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>
     </div>
-</body>
-</html>
+</div>

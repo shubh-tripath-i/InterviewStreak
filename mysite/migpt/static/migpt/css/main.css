@@ -1236,3 +1236,19 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   text-align:center;
   margin:10px 10px;
 }
+
+.pass-reset-btn{
+  margin-top:20px;
+}
+
+.form-heading{
+  position: relative;
+  text-align: center;
+  margin-bottom:20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d9d8d8;
+}
+
+.display-message{
+  padding-top:30px;font-size:18px;
+}

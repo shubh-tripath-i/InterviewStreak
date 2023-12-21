@@ -4,7 +4,6 @@ from allauth.account.views import (
     LoginView,
     LogoutView,
     PasswordResetView,
-    PasswordChangeView
     # Add other views you want to include
 )
 
@@ -16,7 +15,6 @@ urlpatterns = [
     path('accounts/login/', LoginView.as_view(), name='login'),
     path('accounts/logout/', LogoutView.as_view(), name='logout'),
     path('accounts/password/reset/', PasswordResetView.as_view(), name='account_reset_password'),
-    path('accounts/password/change/', PasswordChangeView.as_view(), name='account_change_password'),
     path('profile/', views.view_profile, name='view_profile'),
     path('profile/edit', views.update_profile, name='update_profile'),
     path('contact-us/', views.contact, name='contact'),

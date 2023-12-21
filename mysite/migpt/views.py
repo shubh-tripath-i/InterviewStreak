@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from migpt import utils
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, UserProfileForm, UserInterviewForm, ContactUsForm, FeedbackForm
@@ -11,8 +11,6 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.views import PasswordResetView
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from decimal import Decimal
 from django import forms
@@ -28,7 +26,7 @@ def signup(request):
             user.save()
             current_site = get_current_site(request)
             mail_subject = 'Activation link has been sent to your email id'
-            message = render_to_string('migpt/account_verification_mail.html', {
+            message = render_to_string('migpt/message/account_verification_mail.html', {
                 'user': user,
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -40,10 +38,10 @@ def signup(request):
             )
             print(message)
             # email.send()
-            return HttpResponse('Please confirm your email address to complete the registration')
+            return render(request, 'migpt/message/email_verification.html', {})
     else:
         form = SignUpForm()
-    return render(request, 'migpt/signup.html',{'form': form})
+    return render(request, 'migpt/signup.html', {'form': form})
 
 
 def verify_email(request, uidb64, token):
@@ -56,9 +54,9 @@ def verify_email(request, uidb64, token):
         user.is_active = True
         user.save()
         models.UserProfile.objects.create(user=user)
-        return HttpResponse('Email verification succesful')
+        return render(request, 'migpt/message/email_verification_succesful.html', {})
     else:
-        return HttpResponse('Activation link is invalid!')
+        return render(request, 'migpt/message/invalid_activation_link.html', {})
 
 
 def index(request):
@@ -184,7 +182,8 @@ def start_interview(request):
         context = {'user_initial': interview.user.first_name[0]}
         return render(request, 'migpt/interview_interface.html', context)
     else:
-        return HttpResponse("Interview Over")
+        url = reverse('migpt:display_result') + f'?interview={interview.id}'
+        return redirect(url)
 
 
 def check_review_status(request):
@@ -207,7 +206,7 @@ def display_result(request):
     interview_id = request.GET.get('interview')
     interview = models.UserInterview.objects.get(id=interview_id)
     if request.user != interview.user:
-        return HttpResponse("Invalid Request")
+        return render(request, 'migpt/message/invalid_interview.html', {})
     questions = models.UserQuestionAnswer.objects.filter(user=interview.user,
                                                         session=interview, is_asked=True).order_by('pos')
     context = {

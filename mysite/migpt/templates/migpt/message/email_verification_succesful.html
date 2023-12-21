@@ -1,0 +1,16 @@
+{% load static %}
+{% include "migpt/base.html" %}
+<section class="contact_section layout_padding">
+  <div class="container ">
+    <div class="heading_container">
+      <h2>
+        Email verification succesful
+      </h2>
+    </div>
+  </div>
+  <div class="container">
+    <div class="display-message">
+        Your email has been succesfully verified. <a href = "{% url 'migpt:login' %}">Login with your credentials.</a>
+      </div>
+  </div>
+</section>
