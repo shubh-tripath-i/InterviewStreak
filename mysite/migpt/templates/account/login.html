@@ -1,27 +1,38 @@
-{% load i18n %}
-{% load allauth account socialaccount %}
-{% block content %}
-    <p>
-        {% blocktrans %}If you have not created an account yet, then please
-    <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}
-    </p>
-    {% url 'account_login' as login_url %}
-    {% element form form=form method="post" action=login_url tags="entrance,login" %}
-        {% slot body %}
-            {% csrf_token %}
-            {% element fields form=form unlabeled=True %}
-            {% endelement %}
-            {% if redirect_field_value %}
-                <input type="hidden"
-                       name="{{ redirect_field_name }}"
-                       value="{{ redirect_field_value }}" />
-            {% endif %}
-        {% endslot %}
-        {% slot actions %}
-            {% element button type="submit" tags="prominent,login" %}
-                {% trans "Sign In" %}
-            {% endelement %}
-        {% endslot %}
-    {% endelement %}
-    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-{% endblock content %}
+{% load static %}
+{% include "migpt/base.html" %}
+<div class="form-container">
+  <h2>Login</h2>
+  <form method="POST">
+    {% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-error">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+    {% endif %}
+    {% csrf_token %}
+    <label for="id_login">Email:</label>
+    <input type="email" name="login" placeholder="Email address" autocomplete="email" maxlength="320" required="" id="id_login"> 
+    <label for="id_password">Password:</label>
+    <input type="password" name="password" placeholder="Password" autocomplete="current-password" required="" id="id_password">
+    <div style="margin: 10px 10px;">
+        <label for="id_remember">Remember Me:</label>
+        <input type="checkbox" name="remember" id="id_remember">
+    </div>
+    <button class="btn btn-primary" type="submit">Login</button>
+    <span class="helptext"><a href="/accounts/password/reset/">Forgot your password?</a></span>
+    <div style="display:flex;justify-content: center;">
+        New User?
+        <a href="/accounts/signup" style="margin-left:5px;">
+          <h6>Sign UP</h6>
+        </a>
+      </div>
+  </form>
+</div>
