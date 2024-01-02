@@ -62,8 +62,13 @@ def complete_interview(interview_id):
     if not interview.is_complete:
         interview.is_complete = True
         interview.save()
+<<<<<<< Updated upstream
         thread = threading.Thread(target=complete_review, args=[interview])
         thread.start()
+=======
+        # generate_review(interview)
+        # generate_answer_review(interview)
+>>>>>>> Stashed changes
 
 
 def complete_review(interview):

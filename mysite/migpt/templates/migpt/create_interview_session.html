@@ -23,7 +23,26 @@
             <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                <form action="Post">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="custom-field">
+                            <label for="id_job_role" class="field-label">Job Role: <span style="color: red;">*</span></label>
+                            {{ form.job_role }}
+                        </div>
+                
+                        <div class="custom-field">
+                            <label for="id_company" class="field-label">Company:</label>
+                            {{ form.company }}
+                        </div>
+                        
+                        <div class="custom-field">
+                            <label for="id_job_description" class="field-label">Job Description:</label>
+                            {{ form.job_description }}
+                        </div>
+                
+                        <button type="submit">Submit</button>
+                    </form>
+                {% comment %} <form action="Post">
                     <div>
                     <input type="text" placeholder="Job Role" />
                     </div>
@@ -34,11 +53,11 @@
                     <input type="text" class="message-box" placeholder="Job description" />
                     </div>
                     <div class="d-flex ">
-                    <button>
+                    <button type>
                         submit
                     </button>
                     </div>
-                </form>
+                </form> {% endcomment %}
                 </div>
                 <div class="col-md-6">
                 <div class="map_container">

@@ -225,7 +225,7 @@ a:focus {
   max-height: 400px;
 }
 .sub-menu{
-  background-color: rgb(230, 227, 233);
+  background-color: #e6e3e9;
   padding: 20px;
   margin: 10px;
   
@@ -1047,6 +1047,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   display: block;
   opacity: 1; /* Fades in */
 }
+<<<<<<< Updated upstream
 
 .interview-result,
 .questions-section {
@@ -1252,3 +1253,5 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 .display-message{
   padding-top:30px;font-size:18px;
 }
+=======
+>>>>>>> Stashed changes
