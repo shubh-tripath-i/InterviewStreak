@@ -25,6 +25,7 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.question) {
                     addMessage(data.question, true);
+                    speakText(data.question);
                     if (data.auto_answer) {
                         getAutoAnswer();
                     }
@@ -207,4 +208,37 @@ $(document).ready(function () {
             recognition = undefined;
         }
     });
+
+    // AWS text to speech
+    AWS.config.update({
+        region: 'us-east-1',
+        accessKeyId: 'AKIA5THUW2ARIZLEPTZP',
+        secretAccessKey: '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'
+    });
+
+    function speakText(text) {
+    
+        // Generate the presigned URL for the speech audio
+        var speechParams = {
+            Engine: "neural",
+            OutputFormat: "mp3",
+            SampleRate: "24000",
+            Text: text,
+            TextType: "text",
+            VoiceId: "Matthew"
+        };
+        var polly = new AWS.Polly({ apiVersion: '2016-06-10' });
+        var signer = new AWS.Polly.Presigner(speechParams, polly);
+        signer.getSynthesizeSpeechUrl(speechParams, function (error, url) {
+            if (error) {
+                console.log(error)
+            } else {
+                // Set the audio source and play it directly
+                var audio = new Audio(url);
+                audio.play();
+            }
+        });
+    }
+    
+    
 });
