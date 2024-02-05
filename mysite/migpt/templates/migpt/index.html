@@ -1,15 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block head_title %}MIGPT{% endblock %}</title>
-        
-    </head>
     <body>
       <div class="hero_area">
+        <!-- header section strats -->
         {% include "migpt/base.html" %}
+        <!-- end header section -->
+        <!-- slider section -->
         <section class=" slider_section ">
           <div class="container">
             <div class="row">
@@ -23,16 +20,181 @@
                   </p>
                   <a href="{% url 'migpt:create_interview_session' %}" class="">
                     Start Interview
+                  </a> 
+                </div>
+              </div>
+              <div class="col-lg-5 col-md-6 offset-lg-1">
+                <div class="img_content">
+                  <div class="img_container">
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                      <div class="carousel-inner">
+                        <div class="carousel-item active">
+                          <div class="img-box">
+                            <img src="{% static 'migpt/images/interview.gif' %}" alt="">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+    
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- end slider section -->
+      </div>
+      <!-- service section -->
+  <section class="service_section layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>
+          Our Services
+        </h2>
+        <img src="images/plug.png" alt="">
+      </div>
+
+      <div class="service_container">
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/simulation.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Realistic Simulations
+            </h5>
+            {% comment %} <p>
+              Experience lifelike interview scenarios tailored to your industry and job role, enhancing your preparedness.
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box active">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/customer-rating.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              AI-Driven Feedback
+            </h5>
+            {% comment %} <p>
+              Receive personalized feedback from our AI system, pinpointing strengths and areas for improvement in your interview skills
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/training.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Industry Focused Practice
+            </h5>
+            {% comment %} <p>
+              Refine your expertise in specific industries, ensuring you're well-prepared for the unique demands of your field.
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/customize.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Customizable Experience
+            </h5>
+            {% comment %} <p>
+              Tailor your mock interviews to match the companies or roles you're targeting, maximizing your readiness for the real thing
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/success.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Track Progress
+            </h5>
+            {% comment %} <p>
+              Monitor your improvement over time with detailed performance analytics, allowing you to focus on areas that need more attention.
+            </p> {% endcomment %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end service section -->
+  <section class="info_section layout_padding">
+        <div class="container">
+          <div class="info_contact">
+            <div class="row">
+              <div class="col-md-4">
+                <a href="">
+                  <img src="{% static 'migpt/images/location-white.png' %}" alt="">
+                  <span>
+                    Passages of Lorem Ipsum available
+                  </span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="">
+                  <img src="{% static 'migpt/images/telephone-white.png' %}" alt="">
+                  <span>
+                    Call : +012334567890
+                  </span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="">
+                  <img src="{% static 'migpt/images/envelope-white.png' %}" alt="">
+                  <span>
+                    demo@gmail.com
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 col-lg-4">
+              <div class="info_form">
+                <form action="">
+                  <input type="email" placeholder="Enter your email">
+                  <button>
+                    subscribe
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+              <div class="info_social">
+                <div>
+                  <a href="">
+                    <img src="{% static 'migpt/images/fb.png' %}" alt="">
+                  </a>
+                </div>
+                <div>
+                  <a href="">
+                    <img src="{% static 'migpt/images/twitter.png' %}" alt="">
+                  </a>
+                </div>
+                <div>
+                  <a href="">
+                    <img src="{% static 'migpt/images/linkedin.png' %}" alt="">
+                  </a>
+                </div>
+                <div>
+                  <a href="">
+                    <img src="{% static 'migpt/images/instagram.png' %}" alt="">
+                  </a>
                 </div>
               </div>
             </div>
+          </div>
+
         </div>
-        </section>
-      </div>
-          <!-- end slider section -->
-      </div>
-        <!--service section-->
-        
+  </section>
+        <!-- footer section -->
+        {% include "migpt/footer.html" %}   
         <script>
             var JS_DATA = {
                 'csrf_token' : '{{ csrf_token }}',

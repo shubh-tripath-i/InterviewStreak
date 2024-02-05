@@ -8,9 +8,6 @@
     </head>
 <body class="sub_page">
     {% include "migpt/base.html" %}
-    {% if interview %}
-    <a href="{% url 'migpt:start_interview' %}">Resume last interview</a>
-    {% endif %}
         <section class="contact_section layout_padding">
             <div class="container ">
             <div class="heading_container">
@@ -42,22 +39,11 @@
                 
                         <button type="submit">Submit</button>
                     </form>
-                {% comment %} <form action="Post">
-                    <div>
-                    <input type="text" placeholder="Job Role" />
-                    </div>
-                    <div>
-                    <input type="text" placeholder="Company" />
-                    </div>
-                    <div>
-                    <input type="text" class="message-box" placeholder="Job description" />
-                    </div>
-                    <div class="d-flex ">
-                    <button type>
-                        submit
-                    </button>
-                    </div>
-                </form> {% endcomment %}
+                    {% if interview %}
+                    <a href="{% url 'migpt:start_interview' %}">
+                        <button type="submit">Resume last interview</button>
+                    </a>
+                    {% endif %}
                 </div>
                 <div class="col-md-6">
                 <div class="map_container">
