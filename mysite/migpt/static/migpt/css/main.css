@@ -1035,3 +1035,60 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   display: block;
   opacity: 1; /* Fades in */
 }
+
+.person-name.speaking {
+  animation: speaking 1s ease-in-out infinite;
+}
+
+@keyframes speaking {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    box-shadow: 0 0 10px 5px rgb(111, 110, 110); /* Light gray color */
+  }
+  50% {
+    transform: scale(1.05) translateY(-2%);
+    opacity: 1;
+    box-shadow: 0 0 20px 10px rgb(111, 110, 110); /* Light gray color */
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    box-shadow: 0 0 10px 5px rgb(111, 110, 110); /* Light gray color */
+  }
+}
+
+.mic-message {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.7); /* Light background color for contrast */
+  color: black; /* Dark text color for contrast */
+  border-radius: 5px;
+  z-index: 1000;
+  animation: fadeInOut 0.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}

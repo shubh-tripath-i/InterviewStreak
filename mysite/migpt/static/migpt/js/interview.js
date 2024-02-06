@@ -196,49 +196,48 @@ $(document).ready(function () {
     }
 
     // Toggle voice recognition on icon click
+    var micMessage = document.getElementById('mic-message');
     voiceInputIcon.addEventListener('click', function () {
         if (!recognition) {
             voiceInputIcon.classList.remove('fa-microphone');
             voiceInputIcon.classList.add('fa-microphone-slash');
+            micMessage.textContent = 'Mic Enabled. Start speaking';
+            micMessage.style.display = 'block';
             startRecognition();
         } else {
             voiceInputIcon.classList.remove('fa-microphone-slash');
             voiceInputIcon.classList.add('fa-microphone');
+            micMessage.textContent = 'Mic Disabled';
+            micMessage.style.display = 'block';
             recognition.stop();
             recognition = undefined;
         }
+        setTimeout(function () {
+            micMessage.style.display = 'none';
+        }, 2000);
     });
 
     // AWS text to speech
-    AWS.config.update({
-        region: 'us-east-1',
-        accessKeyId: 'AKIA5THUW2ARIZLEPTZP',
-        secretAccessKey: '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'
-    });
-
     function speakText(text) {
-    
-        // Generate the presigned URL for the speech audio
-        var speechParams = {
-            Engine: "neural",
-            OutputFormat: "mp3",
-            SampleRate: "24000",
-            Text: text,
-            TextType: "text",
-            VoiceId: "Matthew"
-        };
-        var polly = new AWS.Polly({ apiVersion: '2016-06-10' });
-        var signer = new AWS.Polly.Presigner(speechParams, polly);
-        signer.getSynthesizeSpeechUrl(speechParams, function (error, url) {
-            if (error) {
-                console.log(error)
+        fetch('/speak_text/?text=' + encodeURIComponent(text))
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
             } else {
-                // Set the audio source and play it directly
-                var audio = new Audio(url);
+                const audioUrl = 'data:audio/mpeg;base64,' + data.audio_data;
+                const audio = new Audio(audioUrl);
                 audio.play();
+
+                const personBox = document.querySelector('.person-name');
+                audio.addEventListener('play', () => {
+                    personBox.classList.add('speaking');
+                });
+
+                audio.addEventListener('ended', () => {
+                    personBox.classList.remove('speaking');
+                });
             }
         });
     }
-    
-    
 });
