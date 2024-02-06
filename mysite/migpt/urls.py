@@ -27,5 +27,6 @@ urlpatterns = [
     path('end-interview/', views.end_interview, name='end_interview'),
     path('display-interview-result/', views.display_result, name='display_result'),
     path('get-answer-automatically/', views.get_answer_automatically, name='get_answer_automatically'),
-    path('check-review-status/', views.check_review_status, name="check_review_status")
+    path('check-review-status/', views.check_review_status, name="check_review_status"),
+    path('speak_text/', views.speak_text, name="speak_text")
 ]

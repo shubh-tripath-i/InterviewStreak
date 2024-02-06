@@ -15,6 +15,9 @@ from django.urls import reverse
 from decimal import Decimal
 from django import forms
 from datetime import timedelta
+import boto3
+import base64
+from django.conf import settings
 
 
 def signup(request):
@@ -42,6 +45,28 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'migpt/signup.html', {'form': form})
+
+
+def speak_text(request):
+    text = request.GET.get('text')
+    polly = boto3.client('polly', region_name=settings.AWS_REGION)
+
+    try:
+        response = polly.synthesize_speech(
+            Text=text,
+            OutputFormat='mp3',
+            VoiceId='Matthew',
+            Engine='neural',
+            SampleRate='24000'
+        )
+
+        audio_data = response['AudioStream'].read()
+        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+
+        return JsonResponse({'audio_data': audio_base64})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def verify_email(request, uidb64, token):
