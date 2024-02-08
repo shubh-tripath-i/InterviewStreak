@@ -1297,3 +1297,50 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 .display-message{
   padding-top:30px;font-size:18px;
 }
+
+.feedback-section p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align:center;
+  color:rgb(34, 34, 34);
+}
+
+.feedback-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-link:hover {
+  background-color: #4b208c;
+  color:rgb(255, 255, 255);
+}
+
+.optional-text{
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.interview-page-message{
+  font-size: 18px;
+  margin-bottom:30px;
+  display: flex;
+  column-gap: 1%;
+  align-items: center;
+}
+
+.interview-page-message button{
+  margin-top:0px;
+  padding:10px;
+  border-radius: 5px;
+  background-color: rgb(6, 108, 120);
+}
+
+.interview-page-message button:hover{
+  background-color: rgb(115, 227, 242);
+  color: black;
+}

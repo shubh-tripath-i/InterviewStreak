@@ -101,6 +101,9 @@ def contact(request):
                        "complete": False}
     else:
         form = ContactUsForm()
+        if request.user.is_authenticated:
+            form.fields['email'].initial = request.user.email
+            form.fields['name'].initial = request.user.first_name + " " + request.user.last_name
         context = {"form": form,
                    "complete": False}
     return render(request, 'migpt/contact.html', context)
@@ -117,6 +120,8 @@ def feedback(request):
                        "complete": False}
     else:
         form = FeedbackForm()
+        if request.user.is_authenticated:
+            form.fields['email'].initial = request.user.email
         context = {"form": form,
                    "complete": False}
     return render(request, 'migpt/feedback.html', context)

@@ -89,6 +89,14 @@
   </div>
   {% endfor %}
 </div>
+<div class="questions-section">
+  <h2 class="interview-heading">Feedback</h2>
+<div class="feedback-section">
+  <p>We value your feedback! Please let us know about your experience:</p>
+  <p><a href="{% url 'migpt:feedback' %}" class="feedback-link">Give Feedback</a></p>
+</div>
+</div>
+
 {% else %}
 <div class="processing-overlay" id="processingOverlay">
   <div class="processing-content">

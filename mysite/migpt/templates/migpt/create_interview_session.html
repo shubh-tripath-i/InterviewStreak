@@ -10,6 +10,14 @@
     {% include "migpt/base.html" %}
         <section class="contact_section layout_padding">
             <div class="container ">
+                {% if interview %}
+                    <div class="interview-page-message">
+                    It seems you have an ongoing interview session for {{ interview.job_role }} that you have not completed yet:
+                        <a href="{% url 'migpt:start_interview' %}">
+                            <button type="submit">Resume last interview</button>
+                        </a>
+                    </div>
+                {% endif %}
             <div class="heading_container">
                 <h2>
                 Interview Details
@@ -28,22 +36,17 @@
                         </div>
                 
                         <div class="custom-field">
-                            <label for="id_company" class="field-label">Company:</label>
+                            <label for="id_company" class="field-label">Company <span class="optional-text">(Optional)</span>:</label>
                             {{ form.company }}
                         </div>
                         
                         <div class="custom-field">
-                            <label for="id_job_description" class="field-label">Job Description:</label>
+                            <label for="id_job_description" class="field-label">Job Description <span class="optional-text">(Optional)</span>:</label>
                             {{ form.job_description }}
                         </div>
                 
-                        <button type="submit">Submit</button>
+                        <button type="submit">Start Interview</button>
                     </form>
-                    {% if interview %}
-                    <a href="{% url 'migpt:start_interview' %}">
-                        <button type="submit">Resume last interview</button>
-                    </a>
-                    {% endif %}
                 </div>
                 <div class="col-md-6">
                 <div class="map_container">
