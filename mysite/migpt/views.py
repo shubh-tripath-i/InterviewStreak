@@ -47,6 +47,21 @@ def signup(request):
     return render(request, 'migpt/signup.html', {'form': form})
 
 
+def verify_email(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        models.UserProfile.objects.create(user=user)
+        return render(request, 'migpt/message/email_verification_succesful.html', {})
+    else:
+        return render(request, 'migpt/message/invalid_activation_link.html', {})
+
+
 def speak_text(request):
     text = request.GET.get('text')
     polly = boto3.client('polly', region_name=settings.AWS_REGION)
@@ -67,21 +82,6 @@ def speak_text(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-def verify_email(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        models.UserProfile.objects.create(user=user)
-        return render(request, 'migpt/message/email_verification_succesful.html', {})
-    else:
-        return render(request, 'migpt/message/invalid_activation_link.html', {})
 
 
 def index(request):
