@@ -164,7 +164,10 @@ def create_interview_session(request):
             interview.is_complete = False
             interview = form.save()
             request.session['interview_id'] = interview.id
-            return redirect("migpt:start_interview")
+            # return redirect("migpt:start_interview")
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
     else:
         form = UserInterviewForm()
         user = request.user
@@ -205,7 +208,7 @@ def start_interview(request):
             print(len(questions), "questions generated")
             pos = 1
             for question in questions:
-                print(question)
+                # print(question)
                 models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
                                                         session=interview, pos=pos)
                 pos += 1
