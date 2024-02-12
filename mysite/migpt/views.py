@@ -28,7 +28,7 @@ def signup(request):
             user.is_active = False
             user.save()
             current_site = get_current_site(request)
-            mail_subject = 'Activation link has been sent to your email id'
+            mail_subject = 'Please Verify Your Email Address for crossQ'
             message = render_to_string('migpt/message/account_verification_mail.html', {
                 'user': user,
                 'domain': current_site.domain,
@@ -39,8 +39,7 @@ def signup(request):
             email = EmailMessage(
                         mail_subject, message, to=[to_email]
             )
-            print(message)
-            # email.send()
+            email.send()
             return render(request, 'migpt/message/email_verification.html', {})
     else:
         form = SignUpForm()

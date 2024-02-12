@@ -1375,7 +1375,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   border-radius: 50%;
   width: 50px;
   height: 50px;
-  animation: spin 1s linear infinite;
+  animation: spin-loader 1s linear infinite;
   position: absolute;
   top: 55%;
   left: 48%;
@@ -1384,7 +1384,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 }
 
 /* Keyframes for the rotating loading circle */
-@keyframes spin {
+@keyframes spin-loader {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
