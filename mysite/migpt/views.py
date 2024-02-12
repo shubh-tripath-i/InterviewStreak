@@ -130,9 +130,11 @@ def feedback(request):
 def view_profile(request):
     user = User.objects.get(id=request.user.id)
     interviews = models.UserInterview.objects.filter(user=user).order_by('-created_at')
-    context = {"name": user.first_name + user.last_name,
+    userprofile = models.UserProfile.objects.get(user=request.user)
+    context = {"user": user,
                "interviews": interviews,
-               "email": user.email
+               "email": user.email,
+               "userprofile": userprofile
                }
     return render(request, 'migpt/view_profile.html', context)
 
@@ -148,7 +150,7 @@ def update_profile(request):
             return redirect("migpt:update_profile")
     else:
         form = UserProfileForm(instance=userprofile)
-    return render(request, 'migpt/interview_interface.html', {'form': form})
+    return render(request, 'migpt/edit_profile.html', {'form': form})
 
 
 @login_required
