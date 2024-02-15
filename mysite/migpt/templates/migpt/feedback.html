@@ -31,8 +31,7 @@
             </div>
           </div>
           <div>
-            {{ form.helpfulness_rating.label_tag }} <span style="color:red">*</span> {{ form.helpfulness_rating.errors
-            }}
+            {{ form.helpfulness_rating.label_tag }} <span style="color:red">*</span> {{ form.helpfulness_rating.errors }}
             <div class="rate-box">
               <input type="radio" name="helpfulness_rating" id="star5" value="1" />
               <label class="star" for="star5"></label>
@@ -117,3 +116,5 @@
     {% endif %}
   </div>
 </section>
+
+{% include "migpt/footer.html" %}
