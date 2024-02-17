@@ -255,7 +255,7 @@ a:focus {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: #fffdfd;
+  color: #0d0707;
   margin: 12px 0;
 }
 .sub-menu-link p{
@@ -369,6 +369,7 @@ a:focus {
   -webkit-transform: translate(-45px, 0);
           transform: translate(-45px, 0);
 }
+
 
 .service_section {
   text-align: center;
