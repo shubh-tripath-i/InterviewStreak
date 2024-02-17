@@ -255,7 +255,7 @@ a:focus {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: #fffdfd;
+  color: #0d0707;
   margin: 12px 0;
 }
 .sub-menu-link p{
@@ -369,6 +369,7 @@ a:focus {
   -webkit-transform: translate(-45px, 0);
           transform: translate(-45px, 0);
 }
+
 
 .service_section {
   text-align: center;
@@ -1343,6 +1344,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 .interview-page-message button:hover{
   background-color: rgb(115, 227, 242);
   color: black;
+
 }
 
 /* Styling for the loading overlay */
@@ -1530,4 +1532,5 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   .footer-section {
     flex-direction: column;
   }
+
 }

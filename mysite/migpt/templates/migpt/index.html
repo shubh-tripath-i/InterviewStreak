@@ -35,7 +35,135 @@
               </div>
             </div>
           </div>
-
+        </section>
+        <!-- end slider section -->
+      </div>
+      <!-- service section -->
+  <section class="service_section layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>
+          Our Features
+        </h2>
+        <img src="images/plug.png" alt="">
+      </div>
+      <br>
+      <br>
+      <div class="row">
+        <!-- Left side with text -->
+        <div class="col-lg-6">
+          <br>
+          <br>
+            <div class="feature_content">
+                <h2>Feature 1</h2>
+                <p>
+                    Description of feature 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+            </div>
+        </div>
+        <!-- Right side with video -->
+        <div class="col-lg-6">
+          <div class="video_container" style="border-radius: 10px; overflow: hidden;">
+            <!-- Embed your video here -->
+            <iframe width="560" height="300" src="https://www.youtube.com/embed/your_video_id" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <!-- Left side with video -->
+        <div class="col-lg-6">
+          <div class="video_container" style="border-radius: 10px; overflow: hidden;">
+            <!-- Embed your video here -->
+            <iframe width="560" height="300" src="https://www.youtube.com/embed/your_video_id" frameborder="0" allowfullscreen></iframe>
+        </div>
+        </div>
+        <!-- Right side with text -->
+        <div class="col-lg-6">
+          <br>
+          <br>
+            <div class="feature_content">
+                <h2>Feature 2</h2>
+                <p>
+                    Description of feature 2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+            </div>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class="service_container">
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/simulation.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Realistic Simulations
+            </h5>
+            {% comment %} <p>
+              Experience lifelike interview scenarios tailored to your industry and job role, enhancing your preparedness.
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box active">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/customer-rating.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              AI-Driven Feedback
+            </h5>
+            {% comment %} <p>
+              Receive personalized feedback from our AI system, pinpointing strengths and areas for improvement in your interview skills
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/training.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Industry Focused Practice
+            </h5>
+            {% comment %} <p>
+              Refine your expertise in specific industries, ensuring you're well-prepared for the unique demands of your field.
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/customize.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Customizable Experience
+            </h5>
+            {% comment %} <p>
+              Tailor your mock interviews to match the companies or roles you're targeting, maximizing your readiness for the real thing
+            </p> {% endcomment %}
+          </div>
+        </div>
+        <div class="box">
+          <div class="img-box">
+            <img src="{% static 'migpt/images/success.png' %}" alt="">
+          </div>
+          <div class="detail-box">
+            <h5>
+              Track Progress
+            </h5>
+            {% comment %} <p>
+              Monitor your improvement over time with detailed performance analytics, allowing you to focus on areas that need more attention.
+            </p> {% endcomment %}
+          </div>
         </div>
       </div>
     </div>
@@ -134,7 +262,6 @@
     'csrf_token': '{{ csrf_token }}',
   }
 </script>
-<script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
-<script src="{% static 'migpt/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'migpt/js/main.js' %}"></script>
-{% block extra_js %}{% endblock %}
+
+</body>
+</html>
