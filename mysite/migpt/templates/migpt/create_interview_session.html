@@ -1,5 +1,6 @@
 {% load static %}
 {% include "migpt/base.html" %}
+
 <section class="contact_section layout_padding">
     <div class="container ">
         {% if interview %}
@@ -15,7 +16,6 @@
             <h2>
                 Interview Details
             </h2>
-            <img src="{% static 'migpt/images/contact_logo.png' %}" alt="">
         </div>
     </div>
     <div class="container">
@@ -48,9 +48,9 @@
                 </form>
             </div>
             <div class="col-md-6 right-flex">
-                    <div class="map-responsive">
-                        <img src="{% static 'migpt/images/interview.png' %}" alt="">
-                    </div>
+                <div class="map-responsive sticky-content">
+                  <img src="{% static 'migpt/images/interview.png' %}" alt="Interview image">
+              </div>
             </div>
         </div>
     </div>
@@ -62,5 +62,13 @@
         <div class="loader"></div>
     </div>
 </section>
+
+<script>
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload(); // Reload the page if it's navigated back to
+        }
+    };
+</script>
 
 {% include "migpt/footer.html" %}

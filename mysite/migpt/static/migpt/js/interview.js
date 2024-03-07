@@ -6,9 +6,15 @@ $(document).ready(function () {
         $("#chat-box").append(messageDiv);
     }
 
+    // Declaring variables
     const messageInput = document.getElementById("message-input");
     const sendButton = document.getElementById("send-button");
+    const menuBtn = document.getElementById('menuBtn');
+    const sendBtnsmall = document.getElementById('sendBtnsmall');
+    const voiceInputIcon = document.getElementById('voice-input-icon');
+    const chatBox = document.getElementById('chat-box');
 
+    // To send message when enter is clicked
     messageInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevents the default behavior of the Enter key (e.g., new line in a textarea)
@@ -25,7 +31,9 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.question) {
                     addMessage(data.question, true);
+                    chatBox.scrollTop = chatBox.scrollHeight;
                     speakText(data.question);
+                    sendButton.disabled = false;
                     if (data.auto_answer) {
                         getAutoAnswer();
                     }
@@ -67,10 +75,18 @@ $(document).ready(function () {
 
     // Handle user input and submission
     $("#send-button").click(function () {
-        const userAnswer = $("#message-input").val();
+        var userAnswer = $("#message-input").val();
+        userAnswer = userAnswer.replace(/{|}|"|'/g, '');
         if (userAnswer.trim() !== "") {
             $("#message-input").val("");
+            sendButton.disabled = true;
             addMessage(userAnswer, false);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            if (window.matchMedia("(max-width: 768px)").matches) {
+                voiceInputIcon.style.display = 'inline-block';
+                menuBtn.style.display = 'inline-block';
+                sendBtnsmall.style.display = 'inline-block';
+            }
             // Send the user's answer to Django for processing and update the database
             $.ajax({
                 url: "/save-answer/",
@@ -86,10 +102,12 @@ $(document).ready(function () {
                     if (data.success) {
                         getNextQuestion();
                     } else {
-                        console.error("Failed to save answer.");
+                        sendButton.disabled = false;
+                        alert("Failed to save answer.");
                     }
                 },
                 error: function (error) {
+                    sendButton.disabled = false;
                     console.error(error);
                 },
             });
@@ -130,6 +148,7 @@ $(document).ready(function () {
             personName.style.display = 'flex'; // Show the person's name
         }
     });
+
     enableVideoButton.addEventListener('click', () => {
         handleVideoPermission();
     });
@@ -142,13 +161,15 @@ $(document).ready(function () {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then((stream) => {
                     videoElement.srcObject = stream;
+                    videoElement.style.transform = 'scaleX(-1)';
                 })
                 .catch((error) => {
-                    console.error('Error accessing the camera:', error);
+                    alert("Camera permission is not granted. Please grant it to enable video.");
                 });
         })
             .catch(() => {
                 // If permission is not granted, display the person's name
+                alert("Camera permission is not granted. Please grant it to enable video.");
                 personName.style.display = 'flex';
                 videoContainer.style.display = 'none';
             });
@@ -174,15 +195,17 @@ $(document).ready(function () {
     });
 
     //Add voice input in interface
-    const voiceInputIcon = document.getElementById('voice-input-icon');
+
     let recognition;
 
     // Function to start voice recognition
     function startRecognition() {
+        console.log("Listening")
         recognition = new webkitSpeechRecognition(); // Create a new instance
         recognition.lang = 'en-US'; // Set the language
 
         recognition.onresult = function (event) {
+
             const transcript = event.results[0][0].transcript;
             messageInput.value += transcript + ' '; // Append recognized text
         };
@@ -198,45 +221,77 @@ $(document).ready(function () {
     // Toggle voice recognition on icon click
     var micMessage = document.getElementById('mic-message');
     voiceInputIcon.addEventListener('click', function () {
-        if (!recognition) {
-            voiceInputIcon.classList.remove('fa-microphone');
-            voiceInputIcon.classList.add('fa-microphone-slash');
-            micMessage.textContent = 'Mic Enabled. Start speaking';
-            micMessage.style.display = 'block';
-            startRecognition();
-        } else {
-            voiceInputIcon.classList.remove('fa-microphone-slash');
-            voiceInputIcon.classList.add('fa-microphone');
-            micMessage.textContent = 'Mic Disabled';
-            micMessage.style.display = 'block';
-            recognition.stop();
-            recognition = undefined;
-        }
-        setTimeout(function () {
-            micMessage.style.display = 'none';
-        }, 2000);
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
+                if (!recognition) {
+                    voiceInputIcon.classList.remove('fa-microphone');
+                    voiceInputIcon.classList.add('fa-microphone-slash');
+                    micMessage.textContent = 'Mic Enabled. Start speaking';
+                    micMessage.style.display = 'block';
+                    startRecognition();
+                } else {
+                    voiceInputIcon.classList.remove('fa-microphone-slash');
+                    voiceInputIcon.classList.add('fa-microphone');
+                    micMessage.textContent = 'Mic Disabled';
+                    micMessage.style.display = 'block';
+                    recognition.stop();
+                    recognition = undefined;
+                }
+                setTimeout(function () {
+                    micMessage.style.display = 'none';
+                }, 2000);
+            })
+            .catch((error) => {
+                alert("Microphone permission is not granted. Please grant it to start speaking.");
+            });
     });
 
+    let currentlyPlayingAudio = null;
     // AWS text to speech
     function speakText(text) {
+        if (currentlyPlayingAudio) {
+            currentlyPlayingAudio.pause();
+            currentlyPlayingAudio.currentTime = 0; // Reset the playback to the beginning
+            currentlyPlayingAudio = null;
+        }
         fetch('/speak_text/?text=' + encodeURIComponent(text))
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('Error:', data.error);
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                } else {
+                    const audioUrl = 'data:audio/mpeg;base64,' + data.audio_data;
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                    currentlyPlayingAudio = audio;
+
+                    const personBox = document.querySelector('.person-name');
+                    audio.addEventListener('play', () => {
+                        personBox.classList.add('speaking');
+                    });
+
+                    audio.addEventListener('ended', () => {
+                        personBox.classList.remove('speaking');
+                    });
+                }
+            });
+    }
+
+    // Expand textarea on smaller screens
+    if (window.matchMedia("(max-width: 768px)").matches) {
+        messageInput.addEventListener('input', function () {
+            if (this.value.trim().length > 0) {
+                if (!recognition) {
+                    voiceInputIcon.style.display = 'none';
+                }
+                menuBtn.style.display = 'none';
+                sendBtnsmall.style.display = 'none'
             } else {
-                const audioUrl = 'data:audio/mpeg;base64,' + data.audio_data;
-                const audio = new Audio(audioUrl);
-                audio.play();
-
-                const personBox = document.querySelector('.person-name');
-                audio.addEventListener('play', () => {
-                    personBox.classList.add('speaking');
-                });
-
-                audio.addEventListener('ended', () => {
-                    personBox.classList.remove('speaking');
-                });
+                if (!recognition) {
+                    voiceInputIcon.style.display = 'inline-block';
+                }
+                menuBtn.style.display = 'inline-block';
+                sendBtnsmall.style.display = 'inline-block';
             }
         });
     }

@@ -1,38 +1,40 @@
 {% load static %}
 {% include "migpt/base.html" %}
 
-<div class="hero_area">
-    <div class="signup-container">
+<div class="center-container layout_padding">
+    <div class="form-container">
         <h2 class="form-heading">Sign UP</h2>
         <form method="POST">
             {% csrf_token %}
-            <div>
+            <div class="form-label">
                 First Name: <span style="color:red">*</span>
             </div>
             {{ form.first_name.errors }}
             {{ form.first_name }}
-            <div>
+            <div class="form-label">
                 Last Name: <span style="color:red">*</span>
             </div>
             {{ form.last_name.errors }}
             {{ form.last_name }}
-            <div>
+            <div class="form-label">
                 Email: <span style="color:red">*</span>
             </div>
             {{ form.email.errors }}
             {{ form.email }}
-            <div>
+            <div class="form-label">
                 Password: <span style="color:red">*</span>
             </div>
             {{ form.password1.errors }}
             {{ form.password1 }}
-            <div>
+            <div class="form-label">
                 Confirm your password: <span style="color:red">*</span>
             </div>
             {{ form.password2.errors }}
             {{ form.password2 }}
-            <button class="btn btn-primary" type="submit">Register</button>
+            <button class="btn btn-primary form-label" type="submit">Register</button>
         </form>
         <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>
     </div>
 </div>
+
+{% include "migpt/footer.html" %}

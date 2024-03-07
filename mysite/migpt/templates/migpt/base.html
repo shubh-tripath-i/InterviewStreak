@@ -50,7 +50,7 @@
                                 </li>                                
                                   {% if not user.is_authenticated %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'login' %}">Log IN</a>
+                                        <a class="nav-link" href="{% url 'login' %}">LOG IN</a>
                                     </li>
                                     {% else %}
                                     {% endif %}
@@ -67,10 +67,6 @@
                                                 <img src="{% static 'migpt/images/profile.png' %}" alt="">
                                                 <p>View Profile</p>
 
-                                            </a>
-                                            <a href="#" class="sub-menu-link">
-                                                <img src="{% static 'migpt/images/help.png' %}" alt="">
-                                                <p>help & Support</p>
                                             </a>
                                             <a href="{% url 'logout' %}" class="sub-menu-link">
                                                 <img src="{% static 'migpt/images/logout.png' %}" alt="">

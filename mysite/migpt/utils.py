@@ -5,7 +5,7 @@ from langchain.chains import LLMChain
 from langchain.output_parsers.list import ListOutputParser
 from langchain.llms.fake import FakeListLLM
 from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 import math
 import ast
 from django.core.mail import EmailMessage
@@ -17,6 +17,7 @@ from langchain.prompts import (
 )
 from langchain.callbacks import get_openai_callback
 import threading
+from django.urls import reverse
 
 
 class AnswerReview(BaseModel):
@@ -75,7 +76,7 @@ def complete_review(interview):
     to_email = interview.user.email
     print(to_email)
     mail_subject = f"Your {interview.job_role} Interview Review is Ready!"
-    url = f"http://127.0.0.1:8000/display-interview-result?interview={interview.id}"
+    url = reverse('migpt:display_result') + f'?interview={interview.id}'
     message = f"Hi {interview.user.first_name} {interview.user.last_name},\n\nGreat news! Your {interview.job_role} mock interview review is ready for you to check out. Head over to {url} to view personalized feedback on your performance.\n\nWhether you aced it or stumbled a bit, we've got insights to help you shine in real interviews.\n\nKeep up the great work!\n\nBest,\nThe CrossQ team"
     email = EmailMessage(
                 mail_subject, message, to=[to_email]
@@ -366,7 +367,7 @@ def generate_questions(interview, number_of_questions):
     prompt = prompt_generator(interview, "question_generation")
     chain = make_question_generation_chain(prompt, output_parser)
     response = None
-
+    print("Prompt", prompt)
     retries = 0
     while True:
         if retries > 5:

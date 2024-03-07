@@ -125,6 +125,8 @@ class UserInterview(models.Model):
     cost_question_generation = models.FloatField(default=0.0)
     cost_review = models.FloatField(default=0.0)
     cost_answer_review = models.FloatField(default=0.0)
+    error_present = models.BooleanField(default=False)
+    error_message = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # recording =

@@ -129,11 +129,10 @@ def feedback(request):
 @login_required
 def view_profile(request):
     user = User.objects.get(id=request.user.id)
-    interviews = models.UserInterview.objects.filter(user=user).order_by('-created_at')
+    interviews = models.UserInterview.objects.filter(user=user, is_complete=True).order_by('-created_at')
     userprofile = models.UserProfile.objects.get(user=request.user)
     context = {"user": user,
                "interviews": interviews,
-               "email": user.email,
                "userprofile": userprofile
                }
     return render(request, 'migpt/view_profile.html', context)
@@ -145,7 +144,6 @@ def update_profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=userprofile)
         if form.is_valid():
-            print("is valid called")
             form.save()
             return redirect("migpt:update_profile")
     else:
@@ -155,8 +153,6 @@ def update_profile(request):
 
 @login_required
 def create_interview_session(request):
-    # TODO: Fix number of tokens required on basis of time duration and other factors
-    # Decide when to reduce that tokens in userprofile
     if request.method == 'POST':
         form = UserInterviewForm(request.POST)
         if form.is_valid():
@@ -165,7 +161,6 @@ def create_interview_session(request):
             interview.is_complete = False
             interview = form.save()
             request.session['interview_id'] = interview.id
-            # return redirect("migpt:start_interview")
             return JsonResponse({'status': 'success'})
         else:
             return JsonResponse({'status': 'error', 'errors': form.errors})
@@ -179,7 +174,7 @@ def create_interview_session(request):
             'interview': None
         }
         interview = models.UserInterview.objects.filter(user=request.user).last()
-        if interview and interview.is_complete is False:
+        if interview and interview.is_complete is False and interview.error_present is False:
             context['interview'] = interview
             request.session['interview_id'] = interview.id
     return render(request, 'migpt/create_interview_session.html', context)
@@ -203,10 +198,13 @@ def start_interview(request):
                 number_of_questions = 30
             else:
                 raise Exception("Invalid duration")
-
-            questions = utils.generate_questions(interview, number_of_questions)
-            # questions = ["question 1", "question 2"]
-            print(len(questions), "questions generated")
+            try:
+                questions = utils.generate_questions(interview, number_of_questions)
+            except Exception as e:
+                interview.error_present = True
+                interview.error_message = e
+                interview.save()
+                return render(request, 'migpt/message/interview_schedule_error.html', {})
             pos = 1
             for question in questions:
                 # print(question)
@@ -228,7 +226,7 @@ def check_review_status(request):
 
 @login_required
 def end_interview(request):
-    interview_id = request.GET.get('incomplete_interview_id')
+    interview_id = request.GET.get('incomplete_interview_id')  # For displaying interview result
     if not interview_id:
         interview_id = request.session.get('interview_id')
     utils.complete_interview(interview_id)
@@ -236,6 +234,7 @@ def end_interview(request):
     return redirect(url)
 
 
+@login_required
 def display_result(request):
     interview_id = request.GET.get('interview')
     interview = models.UserInterview.objects.get(id=interview_id)

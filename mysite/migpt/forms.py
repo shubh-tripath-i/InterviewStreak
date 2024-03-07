@@ -7,6 +7,8 @@ from django.utils.text import slugify
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
 
     class Meta:
         model = User
@@ -49,6 +51,30 @@ class UserInterviewForm(forms.ModelForm):
         # fields = ('interview_round', 'subject', 'topic',
         #           'tools', 'difficulty_level', 'question_type', #'user_instructions',
         #           'tags', 'duration')
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Clean job_role
+        job_role = cleaned_data.get('job_role')
+        if job_role:
+            cleaned_data['job_role'] = self.clean_text(job_role)
+
+        # Clean job_description
+        job_description = cleaned_data.get('job_description')
+        if job_description:
+            cleaned_data['job_description'] = self.clean_text(job_description)
+
+        # Clean company
+        company = cleaned_data.get('company')
+        if company:
+            cleaned_data['company'] = self.clean_text(company)
+
+        return cleaned_data
+
+    def clean_text(self, text):
+        # Remove curly brackets, double quotes, and single quotes
+        return text.replace('{', '').replace('}', '').replace('"', '').replace("'", '')
 
 
 class ContactUsForm(forms.ModelForm):
