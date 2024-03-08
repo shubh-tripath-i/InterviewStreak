@@ -663,6 +663,7 @@ a:focus {
 
 .info_section .info_form {
   margin: 0 auto;
+  margin-bottom: 45px;
 }
 
 .info_section .info_form h4 {
