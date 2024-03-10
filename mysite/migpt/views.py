@@ -27,11 +27,10 @@ def signup(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            current_site = get_current_site(request)
-            mail_subject = 'Please Verify Your Email Address for crossQ'
+            mail_subject = 'Please Verify Your Email Address for InterviewStreak'
             message = render_to_string('migpt/message/account_verification_mail.html', {
                 'user': user,
-                'domain': current_site.domain,
+                'host': settings.HOST,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': account_activation_token.make_token(user),
             })
