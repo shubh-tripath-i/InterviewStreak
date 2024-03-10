@@ -11,29 +11,29 @@
             <div class="col-md-6">
                 <form method="post" action="{% url 'migpt:update_profile' %}">
                     {% csrf_token %}
-                    <div>
+                    <!-- <div>
                         <div class="custom-field">
                             <label for="id_job_role" class="field-label">Bio:</label>
                         </div>
                         {{ form.intro.errors }}
                         {{ form.intro }}
-                    </div>
+                    </div> -->
                     <div>
                         {{ form.location.label_tag }}{{ form.location.errors }}
                         {{ form.location }}
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="id_sex">Sex:</label>
                         <select id="id_sex" name="sex" class="custom-select">
                           {% for value, label in form.sex.field.choices %}
                             <option value="{{ value }}">{{ label }}</option>
                           {% endfor %}
                         </select>
-                      </div>
-                    <div>
+                      </div> -->
+                    <!-- <div>
                         {{ form.dob.label_tag }}{{ form.dob.errors }}
                         {{ form.dob }}
-                    </div>
+                    </div> -->
                     <div>
                         {{ form.current_job_role.label_tag }}{{ form.current_job_role.errors }}
                         {{ form.current_job_role }}
@@ -55,7 +55,7 @@
             </div>
             <div class="col-md-6 right-flex">
                 <div class="map-responsive sticky-content">
-                  <img src="{% static 'migpt/images/edit_profile.png' %}" alt="">
+                  <img src="{% static 'migpt/images/edit_profile.png' %}" alt="Edit Profile">
               </div>
             </div>
         </div>

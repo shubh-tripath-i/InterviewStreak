@@ -22,6 +22,11 @@ SECRET_KEY = 'django-insecure-b3&@(^i)sam-p$hfz_)6!eywtsha21&bme!(!1rl)u4upcwk62
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
+if DEBUG:
+    HOST = 'http://127.0.0.1:8000'
+else:
+    HOST = 'https://interviewstreak.com'
+
 ALLOWED_HOSTS = []
 
 

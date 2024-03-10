@@ -760,52 +760,38 @@ a:focus {
   color: #222222;
 }
 
-/*# sourceMappingURL=style.css.map */
-/*login form CSS*/
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .form-container {
-  width: 300px;           /* Set this to your convenience */
-  height: 400px;
-  margin:10px;          /* Set this to your convenience */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%); 
+  margin:30px;          
   background-color: #f1eff1;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 20px 40px rgba(178, 31, 31, 0.2); /* Increased depth effect */
-  width: 400px; /* Increased container width */
-  justify-content: center;
-  align-items: center;
-  overflow: auto;
+  box-shadow: 0 20px 40px rgba(178, 31, 31, 0.2); 
+  width: 400px;
 }
-.signup-container {
-  width: 600px;           /* Set this to your convenience */
-  height: 600px;          /* Set this to your convenience */
-  position:absolute;
-  overflow: auto;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%,-50%); 
-  background-color: #f1eff1;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Increased depth effect */
-  width: 400px; /* Increased container width */
-  justify-content: center;
-  align-items: center;
+
+.form-label {
+  margin: 20px 0px 10px 0px;
 }
+
 form {
   display: flex;
   flex-direction: column;
 }
+
 .centerform {
 position: absolute;
 top: 50%;
 left: 50%;
 transform: translate(-65%,-60%);
 }
+
 label {
   margin-bottom: 10px; /* Increased label margin */
   font-size: 16px; /* Increased font size */
@@ -858,6 +844,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   .chat-container {
     flex-basis: 100%;
   }
+
 }
 
 .chat-box {
@@ -891,6 +878,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   border-radius: 5px;
   background-color: #1e1e1e;
   color: #ffffff;
+  height: 100px;
 }
 
 #send-button {
@@ -911,6 +899,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 
 .person-box {
   height: 45%;
+  max-height:410px;
   margin: 20px;
   background-color: #4b4a4a;
   border-radius: 10px;
@@ -1115,6 +1104,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 
 .review-items {
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
 .review-items h2 {
@@ -1198,7 +1188,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 }
 
 .processing-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -1259,7 +1249,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 }
 .rate-box input:checked ~ .star:before {
   color: #ffcc33;
-  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3), -3px -3px 8px rgba(255, 255, 255, 0.8);
+  text-shadow: 3px 3px 8px rgba(74, 73, 73, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.8);
 }
 .rate-box .star:before {
   content: "★";
@@ -1297,7 +1287,8 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 }
 
 .display-message{
-  padding-top:30px;font-size:18px;
+  padding-top:10px;
+  font-size:18px;
 }
 
 .feedback-section p {
@@ -1333,6 +1324,8 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   display: flex;
   column-gap: 1%;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
 }
 
 .interview-page-message button{
@@ -1414,9 +1407,10 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 }
 
 .display-job-role {
-  font-size: 18px; /* Increase font size */
-  margin-bottom: 3px; /* Decrease margin below the element */
-  color: #4a90e2; /* Set the text color */
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: #4a90e2;
+  text-align: center;
 }
 
 .display-job-date {
@@ -1528,10 +1522,30 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   }
 }
 
-@media screen and (max-width: 418px) {
+@media screen and (max-width: 600px) {
 
   .footer-section {
     flex-direction: column;
   }
 
+  .layout_padding {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+}
+
+
+body {
+  min-height: 100vh;
+  display: grid;
+}
+
+.login-link {
+  color: #007bff; 
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link:hover {
+  text-decoration: underline; 
 }

@@ -4,13 +4,13 @@
   <div class="container ">
     <div class="heading_container">
       <h2>
-        Email verification succesful
+        Oops! Scheduling Issue
       </h2>
     </div>
   </div>
   <div class="container">
     <div class="display-message">
-        Your email has been succesfully verified. <a href = "{% url 'migpt:login' %}" class="login-link">Login with your credentials.</a>
+      We're sorry, but there seems to be an issue scheduling your interview session. Please try <a href = "{% url 'migpt:create_interview_session' %}">scheduling</a> again or reach out to us for assistance at <a href = "{% url 'migpt:contact' %}">Contact Us</a>.
       </div>
   </div>
 </section>
