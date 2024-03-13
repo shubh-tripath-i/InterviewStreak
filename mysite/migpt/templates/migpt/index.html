@@ -6,7 +6,7 @@
   <!-- slider section -->
   <section class=" slider_section ">
     <div class="container">
-      <div class="row">
+      <div class="d-flex homepage-banner">
         <div class="col-md-6 ">
           <div class="detail_box">
             <h1>
@@ -14,10 +14,10 @@
             </h1>
             <p>
               Step into the future of interview preparation with our AI-driven mock interview platform. Practice and
-              refine your skills through realistic simulations tailored to various industries and job roles
+              refine your skills through realistic simulations tailored to various industries and job roles.
             </p>
             <a href="{% url 'migpt:create_interview_session' %}" class="">
-              Start Interview
+              Start Interview for Free
             </a>
           </div>
         </div>
@@ -35,224 +35,96 @@
               </div>
             </div>
           </div>
-        </section>
-        <!-- end slider section -->
-      </div>
-      <!-- service section -->
-  <section class="service_section layout_padding">
-    <div class="container">
-      <div class="heading_container">
-        <h2>
-          Our Features
-        </h2>
-        <img src="images/plug.png" alt="">
-      </div>
-      <br>
-      <br>
-      <div class="row">
-        <!-- Left side with text -->
-        <div class="col-lg-6">
-            <div class="feature_content">
-                <h2>Feature 1</h2>
-                <p>
-                    Description of feature 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-            </div>
         </div>
-        <!-- Right side with video -->
-        <div class="col-lg-6">
-            <div class="video_container" style="border-radius: 10px; overflow: hidden;">
-                <!-- Embed your video here -->
-                <iframe width="560" height="300" src="https://www.youtube.com/embed/your_video_id" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
-    <!-- Add padding between rows -->
-    <div class="row" style="padding-top: 120px;">
-        <!-- Left side with video -->
-        <div class="col-lg-6">
-            <div class="video_container" style="border-radius: 10px; overflow: hidden;">
-                <!-- Embed your video here -->
-                <iframe width="560" height="300" src="https://www.youtube.com/embed/your_video_id" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
-        <!-- Right side with text -->
-        <div class="col-lg-6">
-            <div class="feature_content">
-                <h2>Feature 2</h2>
-                <p>
-                    Description of feature 2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-            </div>
-        </div>
-    </div>
-      <br>
-      <br>
-    </section>
-    <section class="service_section layout_padding" style="background-color: #eae6f5;">
-      <div class="service_container">
-        <div class="box">
-          <div class="img-box">
-            <img src="{% static 'migpt/images/simulation.png' %}" alt="">
-          </div>
-          <div class="detail-box">
-            <h5>
-              Realistic Simulations
-            </h5>
-            {% comment %} <p>
-              Experience lifelike interview scenarios tailored to your industry and job role, enhancing your preparedness.
-            </p> {% endcomment %}
-          </div>
-        </div>
-        <div class="box active">
-          <div class="img-box">
-            <img src="{% static 'migpt/images/customer-rating.png' %}" alt="">
-          </div>
-          <div class="detail-box">
-            <h5>
-              AI-Driven Feedback
-            </h5>
-            {% comment %} <p>
-              Receive personalized feedback from our AI system, pinpointing strengths and areas for improvement in your interview skills
-            </p> {% endcomment %}
-          </div>
-        </div>
-        <div class="box">
-          <div class="img-box">
-            <img src="{% static 'migpt/images/training.png' %}" alt="">
-          </div>
-          <div class="detail-box">
-            <h5>
-              Industry Focused Practice
-            </h5>
-            {% comment %} <p>
-              Refine your expertise in specific industries, ensuring you're well-prepared for the unique demands of your field.
-            </p> {% endcomment %}
-          </div>
-        </div>
-        <div class="box">
-          <div class="img-box">
-            <img src="{% static 'migpt/images/customize.png' %}" alt="">
-          </div>
-          <div class="detail-box">
-            <h5>
-              Customizable Experience
-            </h5>
-            {% comment %} <p>
-              Tailor your mock interviews to match the companies or roles you're targeting, maximizing your readiness for the real thing
-            </p> {% endcomment %}
-          </div>
-        </div>
-        <div class="box">
-          <div class="img-box">
-            <img src="{% static 'migpt/images/success.png' %}" alt="">
-          </div>
-          <div class="detail-box">
-            <h5>
-              Track Progress
-            </h5>
-            {% comment %} <p>
-              Monitor your improvement over time with detailed performance analytics, allowing you to focus on areas that need more attention.
-            </p> {% endcomment %}
-          </div>
-        </div>
-      </div>
-    </div>
   </section>
   <!-- end slider section -->
 </div>
 <!-- service section -->
-<section class="service_section layout_padding">
-  <div class="container">
-    <div class="heading_container">
-      <h2>
-        Our Services
-      </h2>
-      <img src="images/plug.png" alt="">
+<section class="service_section layout_padding2">
+  <div class="heading_container">
+    <h1>
+      Prepare, Practice and Succeed
+    </h1>
+  </div>
+
+  <div class="features-section">
+    <div class="color-block1 feature-block-1">
+      <div class="feature-block">
+        <div class="feature_content">
+          <h3>Free Tailored Preparation for Career Success</h3>
+          <p>
+            Get job-ready with our tailored, free AI mock interviews. Practice with questions specific to your target
+            role and company, gaining a competitive edge for real-world professional challenges.
+          </p>
+        </div>
+        <div class="video_container">
+          <img src="{% static 'migpt/images/job_tailor.png' %}">
+        </div>
+      </div>
     </div>
 
-    <div class="service_container">
-      <div class="box">
-        <div class="img-box">
-          <img src="{% static 'migpt/images/simulation.png' %}" alt="">
+    <div class="color-block1">
+      <div class="feature-block reverse-flex">
+        <div class="video_container">
+          <img src="{% static 'migpt/images/real-world.png' %}">
         </div>
-        <div class="detail-box">
-          <h5>
-            Realistic Simulations
-          </h5>
-          {% comment %} <p>
-            Experience lifelike interview scenarios tailored to your industry and job role, enhancing your preparedness.
-          </p> {% endcomment %}
-        </div>
-      </div>
-      <div class="box active">
-        <div class="img-box">
-          <img src="{% static 'migpt/images/customer-rating.png' %}" alt="">
-        </div>
-        <div class="detail-box">
-          <h5>
-            AI-Driven Feedback
-          </h5>
-          {% comment %} <p>
-            Receive personalized feedback from our AI system, pinpointing strengths and areas for improvement in your
-            interview skills
-          </p> {% endcomment %}
+        <div class="feature_content">
+          <h3>Immersive Real-World Experience</h3>
+          <p>
+            Step into the role of a job candidate with our immersive interview simulations. Our platform mimics real
+            interviews, including in-depth follow-up questions, ensuring you're fully prepared for professional
+            challenges.
+          </p>
         </div>
       </div>
-      <div class="box">
-        <div class="img-box">
-          <img src="{% static 'migpt/images/training.png' %}" alt="">
+    </div>
+
+    <div class="color-block2">
+      <div class="feature-block">
+        <div class="feature_content layout_padding2">
+          <h3>Personalized Feedback for Continuous Growth</h3>
+          <p>
+            Improve your interview skills with personalized feedback that highlights your strengths and areas for
+            improvement. Gain valuable insights into your performance, including specific feedback and actionable
+            suggestions.
+          </p>
         </div>
-        <div class="detail-box">
-          <h5>
-            Industry Focused Practice
-          </h5>
-          {% comment %} <p>
-            Refine your expertise in specific industries, ensuring you're well-prepared for the unique demands of your
-            field.
-          </p> {% endcomment %}
-        </div>
-      </div>
-      <div class="box">
-        <div class="img-box">
-          <img src="{% static 'migpt/images/customize.png' %}" alt="">
-        </div>
-        <div class="detail-box">
-          <h5>
-            Customizable Experience
-          </h5>
-          {% comment %} <p>
-            Tailor your mock interviews to match the companies or roles you're targeting, maximizing your readiness for
-            the real thing
-          </p> {% endcomment %}
+        <div class="video_container">
+          <img src="{% static 'migpt/images/personal_feedback.gif' %}">
         </div>
       </div>
-      <div class="box">
-        <div class="img-box">
-          <img src="{% static 'migpt/images/success.png' %}" alt="">
+    </div>
+
+    <div class="color-block3 layout_padding2">
+      <div class="feature-block">
+        <div class="feature_content">
+          <h3>Enhance Your Answers, Elevate Your Success</h3>
+          <p>
+            Refine your answers with our detailed review system. Each response is carefully evaluated, providing scores,
+            strengths, weaknesses, and expert guidance. Enhance confidence and navigate tough interviews effectively.
+          </p>
         </div>
-        <div class="detail-box">
-          <h5>
-            Track Progress
-          </h5>
-          {% comment %} <p>
-            Monitor your improvement over time with detailed performance analytics, allowing you to focus on areas that
-            need more attention.
-          </p> {% endcomment %}
+        <div class="video_container">
+          <img src="{% static 'migpt/images/answer_review.png' %}">
         </div>
       </div>
     </div>
   </div>
 </section>
-<!-- end service section -->
+
+<section id="cta">
+  <div class="container">
+    <div class="cta-content">
+      <h2>Ready to Ace Your Next Interview?</h2>
+      <p>Kickstart your interview preparation absolutely free and unlock the potential of our platform designed to
+        elevate your performance.</p>
+      <div class="cta-buttons">
+        <a href="{% url 'migpt:create_interview_session' %}" class="btn btn-secondary">Start Interview</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <!-- footer section -->
 {% include "migpt/footer.html" %}
-<script>
-  var JS_DATA = {
-    'csrf_token': '{{ csrf_token }}',
-  }
-</script>
-
-</body>
-</html>
