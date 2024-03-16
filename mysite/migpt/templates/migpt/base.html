@@ -1,92 +1,115 @@
 {% load static %}
 <html>
-    <head>
-        <!-- Basic -->
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <!-- Mobile Metas -->
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <!-- Site Metas -->
-        <meta name="keywords" content="" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>InterviewStreak</title>
-        <link href="{% static 'migpt/css/main.css' %}" rel="stylesheet">
-        <link href="{% static 'migpt/css/bootstrap.css' %}" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
-        <!-- responsive style -->
-        <link href="{% static 'migpt/css/responsive.css' %}" rel="stylesheet" />
-        <script src="{% static 'migpt/js/bootstrap.js' %}"></script>
-        <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
-        <script src="{% static 'migpt/js/main.js' %}"></script>
-    </head>
-    <body>
-            <header class="header_section">
-                <div class="container">
-                    <nav class="navbar navbar-expand-lg custom_nav-container ">
-                        <a class="navbar-brand" href="{% url 'migpt:index' %}">
-                            <img src="{% static 'migpt/images/ai.png' %}" alt="">
-                            <span>
-                            CrossQ
-                            </span>
-                        </a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="s-1"> </span>
-                            <span class="s-2"> </span>
-                            <span class="s-3"> </span>
+
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Site Metas -->
+    <meta name="keywords"
+        content="interview preparation, mock interviews, career success, job interviews, ai interview, interview feedback" />
+    <meta name="description"
+        content="Prepare for your next job interview with our AI-driven mock interview platform. Get personalized feedback, practice real-world scenarios, and elevate your career success." />
+    <meta name="author" content="InterviewStreak" />
+    <title>InterviewStreak</title>
+    <link href="{% static 'migpt/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'migpt/css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'migpt/css/responsive.css' %}" rel="stylesheet" />
+    <script src="{% static 'migpt/js/jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'migpt/js/bootstrap.js' %}"></script>
+    <script src="{% static 'migpt/js/main.js' %}"></script>
+</head>
+
+<body>
+    <header class="header_section" id="navbar">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg custom_nav-container ">
+                <a class="navbar-brand" href="{% url 'migpt:index' %}">
+                    <img src="{% static 'migpt/images/ai.png' %}" alt="Logo image">
+                    <span>
+                        InterviewStreak
+                    </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="s-1"> </span>
+                    <span class="s-2"> </span>
+                    <span class="s-3"> </span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- Close button -->
+                    <div class="d-flex flex-row-reverse">
+                        <button class="navbar-close-toggler d-lg-none" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Close navigation">
+                            <span>&times;</span>
                         </button>
-                
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
-                            <ul class="navbar-nav  ">
-                                <li class="nav-item active">
-                                <a class="nav-link" href="{% url 'migpt:index' %}">Home <span class="sr-only"></span></a>
-                                </li>
-                                <li class="nav-item">
-                                <a class="nav-link" href="{% url 'migpt:create_interview_session' %}">Start Interview </a>
-                                </li>
-                                 <li class="nav-item">
-                                <a class="nav-link" href="{% url 'migpt:contact' %}">Contact</a>
-                                </li>                                
-                                  {% if not user.is_authenticated %}
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'login' %}">LOG IN</a>
-                                    </li>
-                                    {% else %}
-                                    {% endif %}
-                                    {% if user.is_authenticated %}
-                                    <img class="user-pic" src="{% static 'migpt/images/profile.png' %}" alt="User Profile Icon" onclick="toggleMenu()">
-                                    <div class="sub-menu-wrap" id="subMenu">
-                                        <div class="sub-menu">
-                                            <div class="user-info">
-                                                <img class="user-pic" src="{% static 'migpt/images/profile.png' %}" alt="User Profile Icon">
-                                                <h5>{{ user.first_name }}</h5>
-                                            </div>
-                                            <hr>
-                                            <a href="{% url 'migpt:view_profile' %}" class="sub-menu-link">
-                                                <img src="{% static 'migpt/images/profile.png' %}" alt="">
-                                                <p>View Profile</p>
-
-                                            </a>
-                                            <a href="{% url 'logout' %}" class="sub-menu-link">
-                                                <img src="{% static 'migpt/images/logout.png' %}" alt="">
-                                                <p>Logout</p>
-                                            </a>
-
-                                        </div>
+                    </div>
+                    <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
+                        <ul class="navbar-nav  ">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'migpt:index' %}">Home <span
+                                        class="sr-only"></span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'migpt:create_interview_session' %}">Start Interview
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'migpt:contact' %}">Contact Us</a>
+                            </li>
+                            {% if not user.is_authenticated %}
+                            <li class="nav-item login-button">
+                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                            </li>
+                            <li class="nav-item signup-button">
+                                <a class="nav-link" href="{% url 'migpt:signup' %}">Sign Up</a>
+                            </li>
+                            {% else %}
+                            {% endif %}
+                            {% if user.is_authenticated %}
+                            <li class="nav-item nav-small-visible">
+                                <a class="nav-link" href="{% url 'migpt:view_profile' %}">View Profile</a>
+                            </li>
+                            <li class="nav-item nav-small-visible">
+                                <a class="nav-link" href="{% url 'migpt:feedback' %}">Feedback</a>
+                            </li>
+                            <li class="nav-item nav-small-visible">
+                                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center nav-large-visible" id="userMenu">
+                                <img class="user-pic" src="{% static 'migpt/images/profile-ic.png' %}"
+                                    alt="User Profile Icon">
+                                <span class="nav-dropdown-symbol"></span>
+                                <div class="sub-menu-wrap" id="subMenu">
+                                    <div class="sub-menu">
+                                        <a href="{% url 'migpt:view_profile' %}"
+                                            class="sub-menu-link sub-menu-link-first">
+                                            <img src="{% static 'migpt/images/profile.png' %}" alt="">
+                                            <p>View Profile</p>
+                                        </a>
+                                        <a href="{% url 'migpt:feedback' %}" class="sub-menu-link sub-menu-link-first">
+                                            <img src="{% static 'migpt/images/feedback-icon.png' %}" alt="">
+                                            <p>Feedback</p>
+                                        </a>
+                                        <a href="{% url 'logout' %}" class="sub-menu-link sub-menu-link-second">
+                                            <img src="{% static 'migpt/images/logout.png' %}" alt="">
+                                            <p>Logout</p>
+                                        </a>
                                     </div>
-                                {% endif %}
-                            </ul>
-                            </div>
-                        </div>
-                    </nav>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-            </header>
-        <script>
-            let subMenu = document.getElementById("subMenu");
-            function toggleMenu(){
-                subMenu.classList.toggle("open-menu")
-            }
-        </script>
-    </body>
+            </nav>
+        </div>
+    </header>
+</body>
+
 </html>

@@ -1,5 +1,3 @@
-@media (max-width: 1120px) {}
-
 @media (max-width: 992px) {
 
   .hero_area {
@@ -9,17 +7,6 @@
   .header_section {
     padding-top: 10px;
   }
-
-  #navbarSupportedContent {
-    margin-top: 25px;
-  }
-
-  /* .slider_section {
-
-    padding-top: 75px;
-    padding-bottom: 150px;
-
-  } */
 
   .about_section .img-box {
     margin: 0 5%;
