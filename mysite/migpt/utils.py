@@ -69,12 +69,11 @@ def complete_interview(interview_id):
 
 
 def complete_review(interview):
-    # generate_review(interview)
-    # generate_answer_review(interview)
+    generate_review(interview)
+    generate_answer_review(interview)
     interview.review_generated = True
     interview.save()
     to_email = interview.user.email
-    print(to_email)
     mail_subject = f"Your {interview.job_role} Interview Review is Ready!"
     url = reverse('migpt:display_result') + f'?interview={interview.id}'
     message = f"Hi {interview.user.first_name} {interview.user.last_name},\n\nGreat news! Your {interview.job_role} mock interview review is ready for you to check out. Head over to {url} to view personalized feedback on your performance.\n\nWhether you aced it or stumbled a bit, we've got insights to help you shine in real interviews.\n\nKeep up the great work!\n\nBest,\nThe InterviewStreak team"
