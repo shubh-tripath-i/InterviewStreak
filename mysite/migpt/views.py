@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from migpt import models
 from migpt.helpers.tokens import account_activation_token
 from django.core.mail import EmailMessage
-from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -18,6 +17,7 @@ from datetime import timedelta
 import boto3
 import base64
 from django.conf import settings
+from django.http import HttpResponse
 
 
 def signup(request):
@@ -348,3 +348,13 @@ def get_answer_automatically(request):
         return JsonResponse({'success': True, 'answer': answer_text})
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+def robots_txt(request):
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin/",
+        "Sitemap: https://interviewstreak.com/sitemap.xml"
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")

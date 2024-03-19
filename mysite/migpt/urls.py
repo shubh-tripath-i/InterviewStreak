@@ -1,11 +1,17 @@
-from django.urls import path, re_path
+from django.urls import path
 from . import views
 from allauth.account.views import (
     LoginView,
     LogoutView,
     PasswordResetView,
-    # Add other views you want to include
 )
+from django.contrib.sitemaps.views import sitemap
+from sitemaps import StaticViewSitemap
+
+
+sitemaps = {
+    'static': StaticViewSitemap,
+}
 
 app_name = 'migpt'
 
@@ -28,5 +34,7 @@ urlpatterns = [
     path('display-interview-result/', views.display_result, name='display_result'),
     path('get-answer-automatically/', views.get_answer_automatically, name='get_answer_automatically'),
     path('check-review-status/', views.check_review_status, name="check_review_status"),
-    path('speak_text/', views.speak_text, name="speak_text")
+    path('speak_text/', views.speak_text, name="speak_text"),
+    path('robots.txt', views.robots_txt, name='robots_txt'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
