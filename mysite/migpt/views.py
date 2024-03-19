@@ -199,14 +199,17 @@ def start_interview(request):
                 raise Exception("Invalid duration")
             try:
                 questions = utils.generate_questions(interview, number_of_questions)
+                error_message = ""
             except Exception as e:
+                questions = None
+                error_message = e
+            if questions is None:
                 interview.error_present = True
-                interview.error_message = e
+                interview.error_message = error_message
                 interview.save()
                 return render(request, 'migpt/message/interview_schedule_error.html', {})
             pos = 1
             for question in questions:
-                # print(question)
                 models.UserQuestionAnswer.objects.create(question=question, user=interview.user,
                                                         session=interview, pos=pos)
                 pos += 1
@@ -322,12 +325,10 @@ def save_answer(request):
                         cross_questions = utils.generate_cross_question(interview, question,
                                                                         number_of_cross_questions,
                                                                         importance_score)
-                        print("Cross questions generated")
                         if len(cross_questions) > number_of_cross_questions:
                             pos_to_add = pos_to_add*Decimal('0.1')
                             pos = Decimal(str(question.pos)) + Decimal(pos_to_add)
                         for cross_question in cross_questions:
-                            print(cross_question)
                             models.UserQuestionAnswer.objects.create(question=cross_question, user=interview.user,
                                                                     session=interview, pos=pos)
                             pos += pos_to_add

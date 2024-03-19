@@ -200,7 +200,6 @@ $(document).ready(function () {
 
     // Function to start voice recognition
     function startRecognition() {
-        console.log("Listening")
         recognition = new webkitSpeechRecognition(); // Create a new instance
         recognition.lang = 'en-US'; // Set the language
 

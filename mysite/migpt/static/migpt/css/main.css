@@ -50,10 +50,6 @@ body {
   background-color: #eae6f5;
 }
 
-.sub_page .hero_area {
-  height: auto;
-}
-
 .header_section{
   position: sticky;
   top: 0; 
@@ -114,17 +110,6 @@ body {
 
 .disabled{
   background-color: transparent;
-}
-
-a,
-a:hover,
-a:focus {
-  text-decoration: none;
-}
-
-a:hover,
-a:focus {
-  color: initial;
 }
 
 .btn,
@@ -265,19 +250,6 @@ a:focus {
     padding: 10px 20px;
 }
 
-.user-info{
-  display: flex;
-  align-items: center;
-}
-.user-info h5{
-  font-weight: 500;
-  padding-left: 5%;
-}
-.user-info-img{
-  width: 40px;
-  border-radius: 50%;
-  margin-right: 5px;
-}
 .sub-menu hr{
   border: 0;
   height: 2px;
@@ -513,100 +485,6 @@ a:focus {
   background-color: #5625a1;
 }
 
-.about_section {
-  background-color: #f3f0f6;
-}
-
-.about_section .row {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.about_section .img_container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-}
-
-.about_section .img_container .img-box {
-  border: 5px solid #7b57b2;
-  border-radius: 100%;
-  overflow: hidden;
-}
-
-.about_section .img_container .img-box.b1 {
-  width: 70%;
-}
-
-.about_section .img_container .img-box.b2 {
-  width: 50%;
-  margin-left: auto;
-  margin-top: -12%;
-}
-
-.about_section .img_container .img-box img {
-  width: 100%;
-}
-
-.about_section .detail-box {
-  margin-right: 15%;
-}
-
-.about_section .detail-box p {
-  margin-top: 25px;
-}
-
-.about_section .detail-box a {
-  display: inline-block;
-  padding: 10px 35px;
-  background-color: #4b208c;
-  color: #ffffff;
-  border-radius: 5px;
-  margin: 25px 0 45px 0;
-}
-
-.about_section .detail-box a:hover {
-  background-color: #5625a1;
-}
-
-.blog_section .heading_container {
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-}
-
-.blog_section .heading_container h2::before {
-  background-color: #ffffff;
-}
-
-.blog_section .box {
-  margin-top: 55px;
-  background-color: #ffffff;
-  -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.15);
-          box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.15);
-}
-
-.blog_section .box .img-box {
-  position: relative;
-}
-
-.blog_section .box .img-box img {
-  width: 100%;
-}
-
-.blog_section .box .detail-box {
-  padding: 25px 25px 15px;
-}
-
-.blog_section .box .detail-box h5 {
-  font-weight: bold;
-}
-
 .contact_section {
   position: relative;
 }
@@ -676,11 +554,6 @@ a:focus {
   height: 100%;
 }
 
-.footer_bg {
-  background-image: url(../images/footer-bg.png);
-  background-size: cover;
-  background-position: top;
-}
 /* info section */
 .info_section {
   background-color: #190734;
@@ -751,8 +624,6 @@ a:focus {
   opacity: 0.2;
 }
 
-
-
 .info_section .info_form form button {
   -webkit-box-flex: 1;
       -ms-flex: 1;
@@ -791,28 +662,6 @@ a:focus {
 
 /* end info section */
 
-/* footer section*/
-.footer_section {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  position: relative;
-}
-
-.footer_section p {
-  color: #222222;
-  margin: 0 auto;
-  text-align: center;
-  padding: 20px;
-}
-
-.footer_section p a {
-  color: #222222;
-}
-
 .center-container {
   display: flex;
   justify-content: center;
@@ -836,13 +685,6 @@ a:focus {
 form {
   display: flex;
   flex-direction: column;
-}
-
-.centerform {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-65%,-60%);
 }
 
 label {
@@ -1394,7 +1236,6 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
 
 }
 
-/* Styling for the loading overlay */
 #loadingOverlay {
   display: none;
   position: fixed;
@@ -1402,8 +1243,8 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
-  z-index: 9999; /* Ensure it appears above other content */
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
 }
 
 #loadingMessage {
@@ -1429,7 +1270,7 @@ background: linear-gradient(90deg, rgba(9,9,9,1) 0%, rgba(18,18,18,1) 35%, rgba(
   top: 55%;
   left: 48%;
   transform: translate(-50%, -50%);
-  z-index: 10000; /* Ensure it appears above the background */
+  z-index: 10000;
 }
 
 /* Keyframes for the rotating loading circle */

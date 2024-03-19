@@ -3,7 +3,6 @@ from langchain.llms import OpenAI
 from typing import List
 from langchain.chains import LLMChain
 from langchain.output_parsers.list import ListOutputParser
-from langchain.llms.fake import FakeListLLM
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 import math
@@ -54,8 +53,6 @@ class OutputParser(ListOutputParser):
         try:
             return ast.literal_eval(text)
         except Exception as e:
-            print(e)
-            print("Model outputted", text)
             raise OutputParserMalfunctionException
 
 
@@ -96,7 +93,6 @@ def generate_answer_review(interview):
                                 'answer': question.answer,
                                 'format_instructions': output_parser.get_format_instructions()})
                 cost_inr = cb.total_cost*83.06
-                print("Cost", cost_inr)
                 interview.cost_answer_review += cost_inr
                 interview.save()
             question.score = response['text'].score
@@ -121,7 +117,6 @@ def generate_review(interview):
         response = chain({'question_answer': question_answer,
                         'format_instructions': output_parser.get_format_instructions()})
         cost_inr = cb.total_cost*83.06
-        print("Cost", cost_inr)
         interview.cost_review += cost_inr
         interview.save()
     interview.score = response['text'].score
@@ -366,34 +361,28 @@ def generate_questions(interview, number_of_questions):
     prompt = prompt_generator(interview, "question_generation")
     chain = make_question_generation_chain(prompt, output_parser)
     response = None
-    print("Prompt", prompt)
     retries = 0
     while True:
         if retries > 5:
-            print("Maximum retries passed")
             break
         try:
             with get_openai_callback() as cb:
                 response = chain({'number_of_questions': number_of_questions,
                                  'format_instructions': format_instructions})
                 cost_inr = cb.total_cost*83.06
-                print("Cost", cost_inr)
                 interview.cost_question_generation += cost_inr
                 interview.save()
             break
         except OutputParserMalfunctionException:
-            print("Outputparser exception occures")
             retries += 1
             continue
         except Exception as e:
-            print(f"Exception occurred during response generation: {e}")
             break
 
     if response:
         return response['text']
     else:
-        # Handle what to show to users
-        print("No response generated")
+        return None
 
 
 def generate_cross_question(interview, question, number_of_cross_questions, importance_score):
@@ -413,7 +402,6 @@ def generate_cross_question(interview, question, number_of_cross_questions, impo
     retries = 0
     while True:
         if retries > 3:
-            print("Maximum retries passed")
             break
         try:
             with get_openai_callback() as cb:
@@ -422,24 +410,19 @@ def generate_cross_question(interview, question, number_of_cross_questions, impo
                                   'format_instructions': format_instructions,
                                   'question_answer': question_answer})
                 cost_inr = cb.total_cost*83.06
-                print("Cost", cost_inr)
                 interview.cost_question_generation += cost_inr
                 interview.save()
             break
         except OutputParserMalfunctionException:
-            print("Outputparser exception occures")
             retries += 1
             continue
         except Exception as e:
-            print(f"Exception occurred during response generation: {e}")
             break
 
     if response:
         return response['text']
     else:
         return []
-        # Handle what to show to users
-        print("No response generated")
 
 
 def make_question_generation_chain(prompt, output_parser):
@@ -469,13 +452,6 @@ def cross_question_chain(prompt, output_parser):
         verbose=True
     )
     chain = LLMChain(llm=model, output_parser=output_parser, prompt=prompt, verbose=True)
-    return chain
-
-
-def testing_chain(prompt, output_parser):
-    responses = ["Have you worked on Tensorflow?"]
-    model = FakeListLLM(responses=responses)
-    chain = LLMChain(llm=model, prompt=prompt, output_parser=output_parser, verbose=True)
     return chain
 
 
