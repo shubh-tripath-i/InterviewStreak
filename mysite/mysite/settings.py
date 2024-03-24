@@ -27,7 +27,7 @@ if DEBUG:
 else:
     HOST = 'https://interviewstreak.com'
 
-ALLOWED_HOSTS = ['13.235.21.83','ec2-13-235-21-83.ap-south-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['13.235.21.83','ec2-13-235-21-83.ap-south-1.compute.amazonaws.com','interviewstreak.com']
 
 
 # Application definition
