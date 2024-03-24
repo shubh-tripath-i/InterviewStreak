@@ -23,11 +23,11 @@ SECRET_KEY = 'django-insecure-b3&@(^i)sam-p$hfz_)6!eywtsha21&bme!(!1rl)u4upcwk62
 DEBUG = os.environ.get('DEBUG')
 
 if DEBUG:
-    HOST = 'http://13.201.18.12:8000'
+    HOST = 'http://13.235.21.83:8000'
 else:
     HOST = 'https://interviewstreak.com'
 
-ALLOWED_HOSTS = ['13.201.18.12']
+ALLOWED_HOSTS = ['13.235.21.83']
 
 
 # Application definition
