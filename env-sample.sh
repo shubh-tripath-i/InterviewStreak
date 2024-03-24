@@ -1,6 +1,6 @@
 export DJANGO_MYSQL_DB='migpt'
 export DJANGO_MYSQL_USER='root'
-export MYSQL_DB_PASSWORD=''
+export MYSQL_DB_PASSWORD='Vikas28124@'
 export DJANGO_MYSQL_HOST='localhost'
 export DJANGO_MYSQL_PORT='3306'
 export DJANGO_STATIC_URL='/static/'
