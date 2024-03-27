@@ -146,6 +146,4 @@ ACCOUNT_LOGOUT_ON_GET = True
 
 SITE_ID = 1
 
-
 AWS_REGION = "us-east-1"
-
