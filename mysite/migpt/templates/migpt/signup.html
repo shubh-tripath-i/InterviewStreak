@@ -30,7 +30,13 @@
                 Confirm your password: <span style="color:red">*</span>
             </div>
             {{ form.password2.errors }}
-            {{ form.password2 }}
+            <div class="password-container">
+                <input type="password" name="password2" autocomplete="new-password" required="" id="id_password2"
+                    class="password-field">
+                <span class="toggle-password" onclick="togglePasswordVisibility('id_password2')">
+                    <i id="toggleIcon2" class="far fa-eye"></i>
+                </span>
+            </div>
             <button class="btn btn-primary form-label" type="submit">Register</button>
         </form>
         <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>

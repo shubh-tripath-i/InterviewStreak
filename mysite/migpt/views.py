@@ -6,10 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from migpt import models
 from migpt.helpers.tokens import account_activation_token
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
 from django.urls import reverse
 from decimal import Decimal
 from django import forms
@@ -18,6 +16,8 @@ import boto3
 import base64
 from django.conf import settings
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
+from allauth.account.views import LoginView
 
 
 def signup(request):
@@ -27,22 +27,23 @@ def signup(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            mail_subject = 'Please Verify Your Email Address for InterviewStreak'
-            message = render_to_string('migpt/message/account_verification_mail.html', {
-                'user': user,
-                'host': settings.HOST,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
             to_email = form.cleaned_data.get('email')
-            email = EmailMessage(
-                        mail_subject, message, to=[to_email]
-            )
-            email.send()
-            return render(request, 'migpt/message/email_verification.html', {})
+            utils.send_verification_email(user, to_email)
+            return render(request, 'migpt/message/email_verification.html', {'email': to_email, 'resend': False})
     else:
         form = SignUpForm()
     return render(request, 'migpt/signup.html', {'form': form})
+
+
+class CustomLoginView(LoginView):
+    def form_valid(self, form):
+        email = form.cleaned_data['login']
+        user = User.objects.filter(email=email).first()
+        if not user:
+            return reverse('migpt:signup')
+        if not user.is_active:
+            return redirect(reverse('migpt:account_inactive', kwargs={'email': user.email}))
+        return super().form_valid(form)
 
 
 def verify_email(request, uidb64, token):
@@ -58,6 +59,27 @@ def verify_email(request, uidb64, token):
         return render(request, 'migpt/message/email_verification_succesful.html', {})
     else:
         return render(request, 'migpt/message/invalid_activation_link.html', {})
+
+
+def resend_verification_email(request):
+    email = request.GET.get('email')
+    user = User.objects.filter(email=email).first()
+    if not user:
+        return reverse('migpt:signup')
+    if user.is_active:
+        return HttpResponseBadRequest('User is already active')
+    utils.send_verification_email(user, email)
+    return render(request, 'migpt/message/email_verification.html', {'email': email, 'resend': True})
+
+
+def account_inactive(request, email):
+    if not email:
+        return render(request, 'migpt/message/general_error.html', {})
+    user = User.objects.filter(email=email).first()
+    if not user:
+        return reverse('migpt:signup')
+    utils.send_verification_email(user, email)
+    return render(request, 'account/account_inactive.html', {'email': email})
 
 
 def speak_text(request):

@@ -17,6 +17,11 @@ from langchain.prompts import (
 from langchain.callbacks import get_openai_callback
 import threading
 from django.urls import reverse
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.conf import settings
+from migpt.helpers.tokens import account_activation_token
 
 
 class AnswerReview(BaseModel):
@@ -470,3 +475,17 @@ def generate_answer(job_role, question):
     chain = LLMChain(llm=model, prompt=prompt, verbose=True)
     response = chain({'job_role': job_role, 'question': question})
     return response['text']
+
+
+def send_verification_email(user, to_email):
+    mail_subject = 'Please Verify Your Email Address for InterviewStreak'
+    message = render_to_string('migpt/message/account_verification_mail.html', {
+        'user': user,
+        'host': settings.HOST,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+    })
+    email = EmailMessage(
+                mail_subject, message, to=[to_email]
+    )
+    email.send()

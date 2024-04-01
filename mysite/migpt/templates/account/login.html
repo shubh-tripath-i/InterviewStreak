@@ -23,8 +23,13 @@
             <input type="email" name="login" placeholder="Email address" autocomplete="email" maxlength="320"
                 required="" id="id_login">
             <label for="id_password" class="form-label">Password:</label>
-            <input type="password" name="password" placeholder="Password" autocomplete="current-password" required=""
-                id="id_password">
+            <div class="password-container">
+                <input type="password" name="password" placeholder="Password" autocomplete="current-password"
+                    required="" id="id_password" class="password-field">
+                <span class="toggle-password" onclick="togglePasswordVisibility('id_password')">
+                    <i id="toggleIcon2" class="fa fa-eye"></i>
+                </span>
+            </div>
             <div class="form-label">
                 <label for="id_remember">Remember Me:</label>
                 <input type="checkbox" name="remember" id="id_remember">
