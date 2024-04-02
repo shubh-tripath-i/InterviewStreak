@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import certifi
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -109,6 +110,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+os.environ['SSL_CERT_FILE'] = certifi.where()
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = BASE_DIR / "send_mails"
@@ -116,10 +119,11 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     # EMAIL_BACKEND = 'migpt.email_backend.EmailBackend' #For custom email
     EMAIL_USE_TLS = True  # Set to True to use TLS, set to False to not use TLS
-    EMAIL_HOST = 'smtp.gmail.com'  # Your SMTP server's hostname
+    EMAIL_HOST = 'smtpout.secureserver.net'  # Your SMTP server's hostname
     EMAIL_PORT = 587  # Port number for the SMTP server
     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']  # Your email address
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASS']  # Your email password or app-specific password
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER #Required
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
