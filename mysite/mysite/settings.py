@@ -104,7 +104,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/"
@@ -123,7 +123,7 @@ else:
     EMAIL_PORT = 587  # Port number for the SMTP server
     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']  # Your email address
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASS']  # Your email password or app-specific password
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER #Required
+    DEFAULT_FROM_EMAIL = os.environ['EMAIL_HOST_NAME'] #Required
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

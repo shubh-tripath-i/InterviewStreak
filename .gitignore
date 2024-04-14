@@ -1,5 +1,7 @@
 venv/
 __pycache__/
 env.sh
+mysite/static/
 send_mails/
 interviewstreak.pem
+gunicorn_env.sh
