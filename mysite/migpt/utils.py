@@ -22,7 +22,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
 from migpt.helpers.tokens import account_activation_token
-
+from urllib.parse import urljoin
 
 class AnswerReview(BaseModel):
     score: int = Field(description="Score of candidate's answer")
@@ -78,11 +78,17 @@ def complete_review(interview):
     to_email = interview.user.email
     mail_subject = f"Your {interview.job_role} Interview Review is Ready!"
     url = reverse('migpt:display_result') + f'?interview={interview.id}'
+    url = urljoin(settings.HOST, url)
+    print(url)
     message = f"Hi {interview.user.first_name} {interview.user.last_name},\n\nGreat news! Your {interview.job_role} mock interview review is ready for you to check out. Head over to {url} to view personalized feedback on your performance.\n\nWhether you aced it or stumbled a bit, we've got insights to help you shine in real interviews.\n\nKeep up the great work!\n\nBest,\nThe InterviewStreak team"
     email = EmailMessage(
                 mail_subject, message, to=[to_email]
     )
     email.send()
+
+
+def get_value_or_none(value):
+    return value if value != '' else 'None'
 
 
 def generate_answer_review(interview):
@@ -124,13 +130,13 @@ def generate_review(interview):
         cost_inr = cb.total_cost*83.06
         interview.cost_review += cost_inr
         interview.save()
-    interview.score = response['text'].score
-    interview.review = response['text'].review
-    interview.strong_points = response['text'].strong_points
-    interview.weak_points = response['text'].weak_points
-    interview.improvements = response['text'].improvements
-    interview.is_selected = response['text'].is_selected
-    interview.reason_selection = response['text'].reason_selection
+    interview.score = get_value_or_none(response['text'].score)
+    interview.review = get_value_or_none(response['text'].review)
+    interview.strong_points = get_value_or_none(response['text'].strong_points)
+    interview.weak_points = get_value_or_none(response['text'].weak_points)
+    interview.improvements = get_value_or_none(response['text'].improvements)
+    interview.is_selected = get_value_or_none(response['text'].is_selected)
+    interview.reason_selection = get_value_or_none(response['text'].reason_selection)
     interview.save()
 
 
