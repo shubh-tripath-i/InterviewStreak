@@ -261,7 +261,10 @@ def end_interview(request):
 @login_required
 def display_result(request):
     interview_id = request.GET.get('interview')
-    interview = models.UserInterview.objects.get(id=interview_id)
+    try:
+        interview = models.UserInterview.objects.get(id=interview_id)
+    except:
+        return render(request, 'migpt/message/invalid_interview.html', {})
     if request.user != interview.user:
         return render(request, 'migpt/message/invalid_interview.html', {})
     questions = models.UserQuestionAnswer.objects.filter(user=interview.user,

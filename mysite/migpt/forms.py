@@ -16,9 +16,13 @@ class SignUpForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            self.cleaned_data['email'] = ''
-            raise forms.ValidationError("This email is already in use. Please try logging in instead of signing up")
+        user = User.objects.filter(email=email).first()
+        if user is not None:
+            if user.is_active:
+                self.cleaned_data['email'] = ''
+                raise forms.ValidationError("This email is already in use by an active account. Please try logging in instead of signing up.")
+            else:
+                user.delete()
         return email
 
     def save(self, commit=True):
