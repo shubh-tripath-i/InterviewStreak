@@ -1,4 +1,23 @@
 $(document).ready(function () {
+
+    // Check if device is IOS
+    function isIOS() {
+        var ua = navigator.userAgent;
+        // Checks for iPhone and iPod
+        var isIOSDevice = /iPad|iPhone|iPod/.test(ua);
+        // Special case for iPads with iPadOS 13 and later that use a desktop user agent
+        if (!isIOSDevice && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
+            isIOSDevice = true;
+        }
+        return isIOSDevice;
+    }
+
+    function isMobile() {
+        // Regular expression to detect common mobile device user agents
+        var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+        return mobileRegex.test(navigator.userAgent);
+    }
+
     // Function to add a message to the chat box
     function addMessage(message, incoming) {
         const messageClass = incoming ? "incoming" : "outgoing";
@@ -211,7 +230,19 @@ $(document).ready(function () {
     function startRecognition() {
         recognition = new webkitSpeechRecognition(); // Create a new instance
         recognition.lang = 'en-US'; // Set the language
-
+        recognition.onerror = function (event) {
+            if (isIOS()) {
+                alert("Microphone may not be fully supported on iOS devices. Please use your keyboard microphone instead.");
+            }
+            else {
+                if (isMobile()) {
+                    alert("Microphone may not be fully supported on your device. Please use your keyboard microphone instead.");
+                }
+                else {
+                    alert("Microphone may not be fully supported on your device.");
+                }
+            }
+        };
         recognition.onresult = function (event) {
 
             const transcript = event.results[0][0].transcript;
