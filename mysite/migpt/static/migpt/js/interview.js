@@ -115,71 +115,80 @@ $(document).ready(function () {
     });
 
     //Add video element and it's functionalities
-    const personBox = document.getElementById('candidate-box');
-    const personName = document.getElementById('candidate-name');
-    const videoContainer = document.getElementById('videoContainer');
-    const videoElement = document.getElementById('videoElement');
+    function setupVideo() {
 
-    personBox.addEventListener('mouseenter', () => {
-        disableVideoButton.style.display = 'block';
-        enableVideoButton.style.display = 'block';
-    });
-
-    personBox.addEventListener('mouseleave', () => {
-        disableVideoButton.style.display = 'none';
-        enableVideoButton.style.display = 'none';
-    });
-
-    disableVideoButton.addEventListener('click', async () => {
+        const personBox = document.getElementById('candidate-box');
+        const personName = document.getElementById('candidate-name');
+        const videoContainer = document.getElementById('videoContainer');
         const videoElement = document.getElementById('videoElement');
 
-        if (videoElement.srcObject) {
-            const tracks = videoElement.srcObject.getTracks();
+        personBox.addEventListener('mouseenter', () => {
+            disableVideoButton.style.display = 'block';
+            enableVideoButton.style.display = 'block';
+        });
 
-            // Suspend the video element to try to stop the camera feed
-            videoElement.pause();
+        personBox.addEventListener('mouseleave', () => {
+            disableVideoButton.style.display = 'none';
+            enableVideoButton.style.display = 'none';
+        });
 
-            // Stop each track and wait for the promises to resolve
-            await Promise.all(tracks.map(track => track.stop()));
+        disableVideoButton.addEventListener('click', async () => {
+            const videoElement = document.getElementById('videoElement');
 
-            // Set srcObject to null after stopping the tracks
-            videoElement.srcObject = null;
-            videoContainer.style.display = 'none'; // Hide the video container
-            personName.style.display = 'flex'; // Show the person's name
-        }
-    });
+            if (videoElement.srcObject) {
+                const tracks = videoElement.srcObject.getTracks();
 
-    enableVideoButton.addEventListener('click', () => {
-        handleVideoPermission();
-    });
+                // Suspend the video element to try to stop the camera feed
+                videoElement.pause();
 
-    function handleVideoPermission() {
-        navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
-            // If permission is granted, display the video
-            personName.style.display = 'none';
-            videoContainer.style.display = 'block';
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    videoElement.srcObject = stream;
-                    videoElement.style.transform = 'scaleX(-1)';
-                })
-                .catch((error) => {
+                // Stop each track and wait for the promises to resolve
+                await Promise.all(tracks.map(track => track.stop()));
+
+                // Set srcObject to null after stopping the tracks
+                videoElement.srcObject = null;
+                videoContainer.style.display = 'none'; // Hide the video container
+                personName.style.display = 'flex'; // Show the person's name
+            }
+        });
+
+        enableVideoButton.addEventListener('click', () => {
+            handleVideoPermission();
+        });
+
+        function handleVideoPermission() {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+                // If permission is granted, display the video
+                personName.style.display = 'none';
+                videoContainer.style.display = 'block';
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then((stream) => {
+                        videoElement.srcObject = stream;
+                        videoElement.style.transform = 'scaleX(-1)';
+                    })
+                    .catch((error) => {
+                        alert("Camera permission is not granted. Please grant it to enable video.");
+                    });
+            })
+                .catch(() => {
+                    // If permission is not granted, display the person's name
                     alert("Camera permission is not granted. Please grant it to enable video.");
+                    personName.style.display = 'flex';
+                    videoContainer.style.display = 'none';
                 });
-        })
-            .catch(() => {
-                // If permission is not granted, display the person's name
-                alert("Camera permission is not granted. Please grant it to enable video.");
-                personName.style.display = 'flex';
-                videoContainer.style.display = 'none';
-            });
+        }
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            handleVideoPermission();
+        } else {
+            alert('Sorry, camera access is not supported in this browser.');
+        }
     }
 
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        handleVideoPermission();
-    } else {
-        alert('Sorry, camera access is not supported in this browser.');
+    // Only ask for camera permission when video box is visible
+    if (window.innerWidth >= 992) {
+        setupVideo();
     }
+
 
     //Display menu in interview
     document.getElementById('menuBtn').addEventListener('click', function () {
