@@ -1649,6 +1649,9 @@ button:hover {
 }
 
 @media (max-width: 991.98px) {
+  .chat-interface{
+    height: 100vh;
+  }
   .mic-message{
     top: 50%;
     left: 50%;
