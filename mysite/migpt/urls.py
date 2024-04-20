@@ -39,4 +39,6 @@ urlpatterns = [
     path('speak_text/', views.speak_text, name="speak_text"),
     path('robots.txt', views.robots_txt, name='robots_txt'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-of-use/', views.terms_of_use, name='terms_of_use'),
 ]

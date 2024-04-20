@@ -384,3 +384,11 @@ def robots_txt(request):
         "Sitemap: https://interviewstreak.com/sitemap.xml"
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def privacy_policy(request):
+    return render(request, 'migpt/privacy_policy.html', {})
+
+
+def terms_of_use(request):
+    return render(request, 'migpt/terms_of_use.html', {})

@@ -37,6 +37,12 @@
                     <i id="toggleIcon2" class="far fa-eye"></i>
                 </span>
             </div>
+            <label>
+                <input type="checkbox" id="tos" name="tos" checked="" disabled="">
+                    I understand and agree with the
+                    <a href="{% url 'migpt:terms_of_use' %}" target="_blank">Terms of Use</a>
+                    and <a href="{% url 'migpt:privacy_policy' %}" target="_blank">Privacy Policy</a>
+            </label>
             <button class="btn btn-primary form-label" type="submit">Register</button>
         </form>
         <p class="text-center">If you already have an account, <a href="/accounts/login">login</a> instead.</p>
