@@ -263,14 +263,14 @@ $(document).ready(function () {
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then((stream) => {
                 if (!recognition) {
-                    voiceInputIcon.classList.remove('fa-microphone');
-                    voiceInputIcon.classList.add('fa-microphone-slash');
+                    voiceInputIcon.classList.remove('fa-microphone-slash');
+                    voiceInputIcon.classList.add('fa-microphone');
                     micMessage.textContent = 'Mic Enabled. Start speaking';
                     micMessage.style.display = 'block';
                     startRecognition();
                 } else {
-                    voiceInputIcon.classList.remove('fa-microphone-slash');
-                    voiceInputIcon.classList.add('fa-microphone');
+                    voiceInputIcon.classList.remove('fa-microphone');
+                    voiceInputIcon.classList.add('fa-microphone-slash');
                     micMessage.textContent = 'Mic Disabled';
                     micMessage.style.display = 'block';
                     recognition.stop();

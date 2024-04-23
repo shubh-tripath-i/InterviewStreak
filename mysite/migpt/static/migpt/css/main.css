@@ -102,7 +102,7 @@ body {
   color: #000000;
   text-align: center;
   border-radius: 35px;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .custom_nav-container .navbar-nav .nav-item.active .nav-link, .custom_nav-container .navbar-nav .nav-item .nav-link:hover {
@@ -142,12 +142,12 @@ body {
 }
 
 .navbar-brand img {
-  margin-right: 5px;
-  width: 35px;
+  margin-right: 10px;
+  width: 40px;
 }
 
 .navbar-brand span {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: #4b208c;
 }
