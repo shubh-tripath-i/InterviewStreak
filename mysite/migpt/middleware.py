@@ -22,6 +22,6 @@ class AutoLoginMiddleware:
             )
             user.backend = "django.contrib.auth.backends.ModelBackend"
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-            models.UserProfile.objects.create(user=user)
+            models.UserProfile.objects.get_or_create(user=user)
         response = self.get_response(request)
         return response
