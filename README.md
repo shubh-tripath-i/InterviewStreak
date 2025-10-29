@@ -84,7 +84,7 @@ You only need an OpenAI API Key to run this project.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/shubh-tripath-i/interviewstreak.git
+git clone [https://github.com/shubh-tripath-i/InterviewStreak.git](https://github.com/shubh-tripath-i/InterviewStreak.git)
 cd interviewstreak
 ````
 
