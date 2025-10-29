@@ -121,7 +121,7 @@ pip install -r requirements.txt
 ### 5. Configure Environment Variables
 
 All environment variables are stored in the provided **`env_sample.sh`** file.
-This file includes keys required for OpenAI and optionally AWS Polly (for text-to-speech support).
+This file includes keys required for OpenAI and optionally AWS Polly (for text-to-speech support). If AWS credentials are set, questions will be recited in natural speech to give more realistic experience.
 
 #### macOS / Linux
 
