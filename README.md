@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="static/logo.png" alt="InterviewStreak Logo" width="120"/>
+<img src="static/migpt/images/logo.png" alt="InterviewStreak Logo" width="120"/>
 
 # InterviewStreak
 
