@@ -1,44 +1,5 @@
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from migpt import models
-from django.utils.text import slugify
-
-
-class SignUpForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(required=True)
-    last_name = forms.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        user = User.objects.filter(email=email).first()
-        if user is not None:
-            if user.is_active:
-                self.cleaned_data['email'] = ''
-                raise forms.ValidationError("This email is already in use by an active account. Please try logging in instead of signing up.")
-            else:
-                user.delete()
-        return email
-
-    def save(self, commit=True):
-        user = super(SignUpForm, self).save(commit=False)
-        user.email = self.cleaned_data['email']
-        username = slugify(user.email.split('@')[0])
-        i = 0
-        while User.objects.filter(username=username).exists():
-            username = f"{slugify(user.email.split('@')[0])}{i}"
-            i += 1
-
-        user.username = username
-        if commit:
-            user.save()
-        return user
-
 
 class UserProfileForm(forms.ModelForm):
     class Meta:

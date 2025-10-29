@@ -1,13 +1,10 @@
 from django.http import JsonResponse
 from migpt import utils
 from django.shortcuts import render, redirect
-from .forms import SignUpForm, UserProfileForm, UserInterviewForm, ContactUsForm, FeedbackForm
+from .forms import UserProfileForm, UserInterviewForm, ContactUsForm, FeedbackForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from migpt import models
-from migpt.helpers.tokens import account_activation_token
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
 from django.urls import reverse
 from decimal import Decimal
 from django import forms
@@ -15,75 +12,12 @@ from datetime import timedelta
 import boto3
 import base64
 from django.conf import settings
-from django.http import HttpResponse
-from django.http import HttpResponseBadRequest
-from allauth.account.views import LoginView
-
-
-def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-            to_email = form.cleaned_data.get('email')
-            utils.send_verification_email(user, to_email)
-            return render(request, 'migpt/message/email_verification.html', {'email': to_email, 'resend': False})
-    else:
-        form = SignUpForm()
-    return render(request, 'migpt/signup.html', {'form': form})
-
-
-class CustomLoginView(LoginView):
-    def form_valid(self, form):
-        email = form.cleaned_data['login']
-        user = User.objects.filter(email=email).first()
-        if not user:
-            return reverse('migpt:signup')
-        if not user.is_active:
-            return redirect(reverse('migpt:account_inactive', kwargs={'email': user.email}))
-        return super().form_valid(form)
-
-
-def verify_email(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        models.UserProfile.objects.create(user=user)
-        return render(request, 'migpt/message/email_verification_succesful.html', {})
-    else:
-        return render(request, 'migpt/message/invalid_activation_link.html', {})
-
-
-def resend_verification_email(request):
-    email = request.GET.get('email')
-    user = User.objects.filter(email=email).first()
-    if not user:
-        return reverse('migpt:signup')
-    if user.is_active:
-        return HttpResponseBadRequest('User is already active')
-    utils.send_verification_email(user, email)
-    return render(request, 'migpt/message/email_verification.html', {'email': email, 'resend': True})
-
-
-def account_inactive(request, email):
-    if not email:
-        return render(request, 'migpt/message/general_error.html', {})
-    user = User.objects.filter(email=email).first()
-    if not user:
-        return reverse('migpt:signup')
-    utils.send_verification_email(user, email)
-    return render(request, 'account/account_inactive.html', {'email': email})
 
 
 def speak_text(request):
     text = request.GET.get('text')
+    if settings.AWS_ACCESS_KEY_ID == '' or settings.AWS_SECRET_ACCESS_KEY == '':
+        return JsonResponse({'error': 'AWS Polly not configured. Please set AWS keys.'}, status=400)
     polly = boto3.client('polly', region_name=settings.AWS_REGION)
 
     try:
@@ -101,6 +35,7 @@ def speak_text(request):
         return JsonResponse({'audio_data': audio_base64})
 
     except Exception as e:
+        print(f"[ERROR] Error synthesizing speech: {e}")
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -225,6 +160,7 @@ def start_interview(request):
             except Exception as e:
                 questions = None
                 error_message = e
+                print(f"[ERROR] Error generating questions for interview id {interview.id}: {e}")
             if questions is None:
                 interview.error_present = True
                 interview.error_message = error_message
@@ -374,16 +310,6 @@ def get_answer_automatically(request):
         return JsonResponse({'success': True, 'answer': answer_text})
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method'})
-
-
-def robots_txt(request):
-    lines = [
-        "User-agent: *",
-        "Allow: /",
-        "Disallow: /admin/",
-        "Sitemap: https://interviewstreak.com/sitemap.xml"
-    ]
-    return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
 def privacy_policy(request):

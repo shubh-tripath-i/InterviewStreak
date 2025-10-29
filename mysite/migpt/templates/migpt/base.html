@@ -61,24 +61,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'migpt:contact' %}">Contact Us</a>
                             </li>
-                            {% if not user.is_authenticated %}
-                            <li class="nav-item login-button">
-                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                            </li>
-                            <li class="nav-item signup-button">
-                                <a class="nav-link" href="{% url 'migpt:signup' %}">Sign Up</a>
-                            </li>
-                            {% else %}
-                            {% endif %}
-                            {% if user.is_authenticated %}
                             <li class="nav-item nav-small-visible">
                                 <a class="nav-link" href="{% url 'migpt:view_profile' %}">View Profile</a>
                             </li>
                             <li class="nav-item nav-small-visible">
                                 <a class="nav-link" href="{% url 'migpt:feedback' %}">Feedback</a>
-                            </li>
-                            <li class="nav-item nav-small-visible">
-                                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                             </li>
                             <li class="nav-item d-flex align-items-center nav-large-visible" id="userMenu">
                                 <img class="user-pic" src="{% static 'migpt/images/profile-ic.png' %}"
@@ -95,14 +82,9 @@
                                             <img src="{% static 'migpt/images/feedback-icon.png' %}" alt="Feedback">
                                             <p>Feedback</p>
                                         </a>
-                                        <a href="{% url 'logout' %}" class="sub-menu-link sub-menu-link-second">
-                                            <img src="{% static 'migpt/images/logout.png' %}" alt="Logout">
-                                            <p>Logout</p>
-                                        </a>
                                     </div>
                                 </div>
                             </li>
-                            {% endif %}
                         </ul>
                     </div>
                 </div>

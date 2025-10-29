@@ -1,5 +1,5 @@
 from migpt import models
-from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from typing import List
 from langchain.chains import LLMChain
 from langchain.output_parsers.list import ListOutputParser
@@ -7,7 +7,6 @@ from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 import math
 import ast
-from django.core.mail import EmailMessage
 from langchain.prompts import (
     SystemMessagePromptTemplate,
     PromptTemplate,
@@ -16,13 +15,7 @@ from langchain.prompts import (
 )
 from langchain.callbacks import get_openai_callback
 import threading
-from django.urls import reverse
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.conf import settings
-from migpt.helpers.tokens import account_activation_token
-from urllib.parse import urljoin
+import os
 
 class AnswerReview(BaseModel):
     score: int = Field(description="Score of candidate's answer")
@@ -75,16 +68,9 @@ def complete_review(interview):
     generate_answer_review(interview)
     interview.review_generated = True
     interview.save()
-    to_email = interview.user.email
-    mail_subject = f"Your {interview.job_role} Interview Review is Ready!"
-    url = reverse('migpt:display_result') + f'?interview={interview.id}'
-    url = urljoin(settings.HOST, url)
-    print(url)
-    message = f"Hi {interview.user.first_name} {interview.user.last_name},\n\nGreat news! Your {interview.job_role} mock interview review is ready for you to check out. Head over to {url} to view personalized feedback on your performance.\n\nWhether you aced it or stumbled a bit, we've got insights to help you shine in real interviews.\n\nKeep up the great work!\n\nBest,\nThe InterviewStreak team"
-    email = EmailMessage(
-                mail_subject, message, to=[to_email]
-    )
-    email.send()
+    message = f"Hi {interview.user.first_name} {interview.user.last_name},\n\nGreat news! Your {interview.job_role} mock interview review is ready for you to check out. Head over to view personalized feedback on your performance.\n\nWhether you aced it or stumbled a bit, we've got insights to help you shine in real interviews.\n\nKeep up the great work!\n\nBest,\nThe InterviewStreak team"
+    print(message)
+
 
 
 def get_value_or_none(value):
@@ -111,7 +97,8 @@ def generate_answer_review(interview):
             question.improvements = response['text'].improvements
             question.perfect_answer = response['text'].perfect_answer
             question.save()
-        except:
+        except Exception as e:
+            print(f"[ERROR] Error generating answer review for question id {question.id}: {e}")
             continue
 
 
@@ -148,8 +135,6 @@ def prompt_generator(interview, type, number_of_cross_questions=None):
     else:
         template += f"You are hiring for the role of {interview.job_role}. "
 
-    # template += f"The round number is {interview.interview_round}. "
-
     if type == "question_generation":
 
         template += "Generate questions to test if the candidate is a valid fit for the job role.\
@@ -159,8 +144,6 @@ def prompt_generator(interview, type, number_of_cross_questions=None):
 
         if interview.job_description:
             template += f"\n\nThe job description is: {interview.job_description}.\n\n"
-#             template += "The generated questions should contain a mix of the questions common\
-#  to the job role and questions directly from the job description."
             template += f"You need to assess both the candidate's domain knowledge, and their fit\
  for the job description. Include a mix of best interview questions asked to\
  {interview.job_role} and some questions specific to evaluating the candidate's knowledge on\
@@ -226,35 +209,6 @@ def prompt_generator(interview, type, number_of_cross_questions=None):
     if type == "cross_question":
         if interview.job_description:
             template += f"\n\nThe job description is: {interview.job_description}.\n\n"
-
-#         template += "You are given the questions asked in the interview and the candidate's answer to it in sequence. You need to evaluate the\
-#  following candidate's answers to the interview questions and generate follow-up questions\
-#  based on the candidate's response to the last question only if very necessary. The follow-up questions should seek additional information, clarification, or\
-#  further details, as you would in a real interview. Choose number of questions according to the requirement but remember you can generate maximum {number_of_questions} questions.  Generate questions only if they will help much in assessing the candidate further and should make sense to the candidate's answer.\n"
-
-#         template += "Your primary task is to generate follow-up questions based on the candidate's\
-#  responses to questions. However, it's important to do so selectively. Generate follow-up questions when one or more of the following conditions are met for the candidate's response.\
-# \n1. When the candidate's response to the question is unclear or vague.\
-# \n2. When the candidate's initial answer is too brief, incomplete or lacks details.\
-# \n3. When you need to probe deeper into the candidate's past behavior and actions in specific situations.\
-# \n4. When you need to assess the candidate's technical or domain-specific knowledge thoroughly.\
-# \n5. When you want to explore the candidate's behavior, decision-making processes, problem-solving abilities, and interpersonal skills.\
-# \n6. When you want to understand how the candidate would approach and resolve hypothetical scenarios.\
-# \n7. When you want to assess the candidate's ability to adapt to changing circumstances and handle unexpected challenges.\
-# \n\nGenerate follow-up questions only when one or more of the above listed\
-#  conditions is matched. Remember, excessive or irrelevant follow-up questions can disrupt the interview\
-#  flow and overwhelm the candidate. Hence generate questions only if absolutely necessary.\
-#  Also, avoid generating follow-up questions\
-#  when the candidate explicitly states a lack of knowledge on a particular concept and avoid when the\
-#  candidate's response is comprehensive, detailed, and effectively addresses the question, indicating\
-#  good knowledge on a concept. Firstly, generate a score measuring the importance of the follow-up\
-#  question needed in this scenario ranging from 1 to 10. So generate follow-up question only if the\
-#  importance score is greater than or equal to {importance_score}. If the importance score is lesser than\
-#  {importance_score}, do not generate any question.\n\nNow, given a candidate's response\
-#  to a question or a set of questions in the sequence they were asked, generate follow-up questions for the last answer only if needed, based on the candidate's response.\
-#  Ensure that the follow-up questions are concise and directly related to the candidate's last answer.\
-# \nYou can generate maximum of {number_of_cross_questions} follow-up questions. That means you can generate less\
-#  than {number_of_cross_questions} questions but not more than {number_of_cross_questions} in any case.\n\n"
 
         if number_of_cross_questions > 1:
             template += "Your primary task is to generate high-quality follow-up questions based on\
@@ -373,6 +327,7 @@ def generate_questions(interview, number_of_questions):
     chain = make_question_generation_chain(prompt, output_parser)
     response = None
     retries = 0
+    print("Generating questions...")
     while True:
         if retries > 5:
             break
@@ -385,9 +340,11 @@ def generate_questions(interview, number_of_questions):
                 interview.save()
             break
         except OutputParserMalfunctionException:
+            print("Output parser malfunctioned, retrying...")
             retries += 1
             continue
         except Exception as e:
+            print(f"Error generating questions: {e}")
             break
 
     if response:
@@ -425,9 +382,11 @@ def generate_cross_question(interview, question, number_of_cross_questions, impo
                 interview.save()
             break
         except OutputParserMalfunctionException:
+            print("Output parser malfunctioned, retrying...")
             retries += 1
             continue
         except Exception as e:
+            print(f"Error generating cross questions: {e}")
             break
 
     if response:
@@ -437,8 +396,8 @@ def generate_cross_question(interview, question, number_of_cross_questions, impo
 
 
 def make_question_generation_chain(prompt, output_parser):
-    model = OpenAI(
-        model_name="gpt-3.5-turbo-0613",
+    model = ChatOpenAI(
+        model_name=os.environ.get('MODEL_NAME', 'gpt-4o-mini'),
         temperature=0.6,
         verbose=True
     )
@@ -447,8 +406,8 @@ def make_question_generation_chain(prompt, output_parser):
 
 
 def make_review_generation_chain(prompt, output_parser, model_name):
-    model = OpenAI(
-        model_name=model_name,
+    model = ChatOpenAI(
+        model_name=os.environ.get('MODEL_NAME', 'gpt-4o-mini'),
         temperature=0.2,
         verbose=True
     )
@@ -457,8 +416,8 @@ def make_review_generation_chain(prompt, output_parser, model_name):
 
 
 def cross_question_chain(prompt, output_parser):
-    model = OpenAI(
-        model_name="gpt-3.5-turbo-0613",
+    model = ChatOpenAI(
+        model_name=os.environ.get('MODEL_NAME', 'gpt-4o-mini'),
         temperature=0.2,
         verbose=True
     )
@@ -473,25 +432,11 @@ def generate_answer(job_role, question):
             [SystemMessagePromptTemplate.from_template(template),
              HumanMessagePromptTemplate.from_template(human_template)]
         )
-    model = OpenAI(
-        model_name="gpt-3.5-turbo-0613",
+    model = ChatOpenAI(
+        model_name=os.environ.get('MODEL_NAME', 'gpt-4o-mini'),
         temperature=0.2,
         verbose=True
     )
     chain = LLMChain(llm=model, prompt=prompt, verbose=True)
     response = chain({'job_role': job_role, 'question': question})
     return response['text']
-
-
-def send_verification_email(user, to_email):
-    mail_subject = 'Please Verify Your Email Address for InterviewStreak'
-    message = render_to_string('migpt/message/account_verification_mail.html', {
-        'user': user,
-        'host': settings.HOST,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': account_activation_token.make_token(user),
-    })
-    email = EmailMessage(
-                mail_subject, message, to=[to_email]
-    )
-    email.send()

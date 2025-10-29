@@ -1,14 +1,7 @@
-export DJANGO_MYSQL_DB=''
-export DJANGO_MYSQL_USER=''
-export MYSQL_DB_PASSWORD=''
-export DJANGO_MYSQL_HOST=''
-export DJANGO_MYSQL_PORT=''
-export EMAIL_HOST_USER=''
-export EMAIL_HOST_PASS=''
-export EMAIL_HOST_NAME=''
+# Configuring OpenAI LLM
 export OPENAI_API_KEY=''
-export DEBUG=''
-export DJANGO_SECRET_KEY=''
-export DJANGO_ALLOWED_HOSTS=''
+export MODEL_NAME='gpt-4o-mini'
+
+# (Optional) Configuring AWS for Polly TTS. Make sure to set these if you want to use TTS features.
 export AWS_SECRET_ACCESS_KEY=''
 export AWS_ACCESS_KEY_ID=''

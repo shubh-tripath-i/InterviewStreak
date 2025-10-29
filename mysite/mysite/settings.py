@@ -6,17 +6,11 @@ import certifi
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-secret-key')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-if DEBUG:
-    HOST = 'http://127.0.0.1:8000/'
-else:
-    HOST = 'https://interviewstreak.com'
-
-ALLOWED_HOSTS = os.environ['DJANGO_ALLOWED_HOSTS'].split()
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1 localhost').split()
 
 # Application definition
 
@@ -42,6 +36,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'migpt.middleware.AutoLoginMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware'
@@ -69,13 +64,8 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['DJANGO_MYSQL_DB'],
-        'CONN_MAX_AGE': 1800,
-        'USER': os.environ['DJANGO_MYSQL_USER'],
-        'PASSWORD': os.environ['MYSQL_DB_PASSWORD'],
-        'HOST': os.environ['DJANGO_MYSQL_HOST'],
-        'PORT': os.environ['DJANGO_MYSQL_PORT']
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -112,31 +102,8 @@ LOGOUT_REDIRECT_URL = "/"
 
 os.environ['SSL_CERT_FILE'] = certifi.where()
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = BASE_DIR / "send_mails"
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    # EMAIL_BACKEND = 'migpt.email_backend.EmailBackend' #For custom email
-    EMAIL_USE_TLS = True  # Set to True to use TLS, set to False to not use TLS
-    EMAIL_HOST = 'smtpout.secureserver.net'  # Your SMTP server's hostname
-    EMAIL_PORT = 587  # Port number for the SMTP server
-    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']  # Your email address
-    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASS']  # Your email password or app-specific password
-    DEFAULT_FROM_EMAIL = os.environ['EMAIL_HOST_NAME'] #Required
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
-# Django-allauth parameters
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_LOGOUT_ON_GET = True
-
 SITE_ID = 1
 
-AWS_REGION = "us-east-1"
+AWS_REGION = "us-east-1" # For AWS Polly
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
