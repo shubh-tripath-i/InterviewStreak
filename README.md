@@ -214,4 +214,5 @@ This project is released under the [MIT License](./LICENSE).
 ## Authors
 
 Shubh Tripathi [Linkedin](https://www.linkedin.com/in/shubh--tripathi/)
+
 Vikas Yadav [Linkedin](https://www.linkedin.com/in/vikas-yadav-devops/)
