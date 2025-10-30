@@ -26,10 +26,14 @@ You can customize interviews for specific **roles**, **companies**, and **job de
 
 ## Demo Video
 
-Click on the image below to see the video!
-
-[![Watch the Review Demo](mysite/migpt/static/migpt/images/home_page.png)](https://github.com/shubh-tripath-i/InterviewStreak/blob/master/mysite/migpt/static/migpt/images/demo.mp4)
-
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=gPsS-fEaqsk" target="_blank">
+    <img src="mysite/migpt/static/migpt/images//home_page.png" 
+         alt="Watch the AI Interview Demo" 
+         width="800" 
+         style="border-radius:10px; position:relative;">
+  </a>
+</p>
 
 ## Key Features
 
