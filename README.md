@@ -59,7 +59,7 @@ After the interview, you receive a detailed performance report that includes:
   - Model’s evaluation and feedback
   - “Perfect Answer” suggestions for improvement
 
-[![Watch the Review Demo](mysite/migpt/static/migpt/images/int_review.png)](https://github.com/shubh-tripath-i/InterviewStreak/blob/master/mysite/migpt/static/migpt/images/review.mp4)
+[![Watch the Review Demo](mysite/migpt/static/migpt/images/personal_feedback.gif)](https://github.com/shubh-tripath-i/InterviewStreak/blob/master/mysite/migpt/static/migpt/images/review.mp4)
 
 
 ### Practice UI
