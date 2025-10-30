@@ -26,6 +26,8 @@ You can customize interviews for specific **roles**, **companies**, and **job de
 
 ## Demo Video
 
+Click on the image below to watch the video!
+
 <p align="center">
   <a href="https://www.youtube.com/watch?v=gPsS-fEaqsk" target="_blank">
     <img src="mysite/migpt/static/migpt/images//home_page.png" 
