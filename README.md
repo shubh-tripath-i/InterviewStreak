@@ -26,6 +26,8 @@ You can customize interviews for specific **roles**, **companies**, and **job de
 
 ## Demo Video
 
+Click on the image below to see the video!
+
 [![Watch the Review Demo](mysite/migpt/static/migpt/images/home_page.png)](https://github.com/shubh-tripath-i/InterviewStreak/blob/master/mysite/migpt/static/migpt/images/demo.mp4)
 
 
