@@ -24,15 +24,24 @@ You can customize interviews for specific **roles**, **companies**, and **job de
 
 ---
 
+## Demo Video
+
+<video src="mysite/migpt/static/migpt/images/demo.mp4" controls width="100%"></video>
+
+
 ## Key Features
 
 ### Intelligent Interview Generation
 - Automatically generates **job-relevant questions** based on your selected **job role** and optional **job description** and **company name**.  
 - Uses modern LLMs to ensure relevance and depth.
 
+<img src="mysite/migpt/static/migpt/images//create_interview.png" alt="Create Interview" style="width:100%; max-width:700px; border-radius:10px; margin:10px 0;">
+
 ### Cross-Questioning Mechanism
 - Dynamically generates **follow-up questions** for your answers when needed.  
 - Mimics a realistic interviewer’s curiosity, testing both **breadth and depth** of your understanding.
+
+<img src="mysite/migpt/static/migpt/images/interview_l.png" alt="Interview" style="width:100%; max-width:700px; border-radius:10px; margin:10px 0;">
 
 ### Comprehensive Evaluation
 After the interview, you receive a detailed performance report that includes:
@@ -47,6 +56,9 @@ After the interview, you receive a detailed performance report that includes:
   - Your response  
   - Model’s evaluation and feedback
   - “Perfect Answer” suggestions for improvement
+
+<video src="mysite/migpt/static/migpt/images/review.mp4" controls width="100%"></video>
+
 
 ### Practice UI
 
@@ -122,6 +134,9 @@ pip install -r requirements.txt
 
 All environment variables are stored in the provided **`env_sample.sh`** file.
 This file includes keys required for OpenAI and optionally AWS Polly (for text-to-speech support). If AWS credentials are set, questions will be recited in natural speech to give more realistic experience.
+
+For OpenAI API key, you can refer to https://platform.openai.com/docs/quickstart
+For AWS Polly credentials, you can refer to https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
 
 #### macOS / Linux
 
