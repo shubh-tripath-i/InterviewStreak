@@ -233,3 +233,36 @@ This project is released under the [MIT License](./LICENSE).
 Shubh Tripathi [Linkedin](https://www.linkedin.com/in/shubh--tripathi/)
 
 Vikas Yadav [Linkedin](https://www.linkedin.com/in/vikas-yadav-devops/)
+
+## Possible Enhancements
+
+### **Interview Intelligence**
+
+* Support **resume-based interviews** where questions are generated from the candidate’s uploaded resume.
+* Include **contextual cross-questioning** that adapts based on previous answers.
+* Add **difficulty-level calibration**, allowing users to choose beginner, intermediate, or expert interviews.
+* Integrate **domain-specific interview sets** (ML, Web Dev, Data Analytics, etc.).
+
+---
+
+### **Voice & Avatar Interaction**
+
+* Add **speech-based interviews** using AI-generated voices.
+* Allow users to choose between **male and female AI avatars** for a more human-like experience.
+* Introduce **AI interviewer avatars** with on-screen facial expressions and lip sync.
+
+---
+
+### **Behavioral & Communication Analysis**
+
+* Implement **gesture recognition** to evaluate body language during video interviews.
+* Add **speech tone and pace analysis** to assess clarity, confidence, and delivery.
+* Provide **feedback on communication skills** alongside technical performance.
+
+---
+
+### **Feedback & Evaluation**
+
+* Introduce **question-wise scoring** and analytics dashboards for performance tracking.
+* Add **personalized improvement suggestions** linked to learning materials or external resources.
+* Offer **comparison reports** across multiple interviews to show progress over time.
