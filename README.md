@@ -26,7 +26,7 @@ You can customize interviews for specific **roles**, **companies**, and **job de
 
 ## Demo Video
 
-<video src="mysite/migpt/static/migpt/images/demo.mp4" controls width="100%"></video>
+[![Watch the Review Demo](mysite/migpt/static/migpt/images/home_page.png)](https://github.com/shubh-tripath-i/InterviewStreak/blob/master/mysite/migpt/static/migpt/images/demo.mp4)
 
 
 ## Key Features
@@ -57,7 +57,7 @@ After the interview, you receive a detailed performance report that includes:
   - Model’s evaluation and feedback
   - “Perfect Answer” suggestions for improvement
 
-<video src="mysite/migpt/static/migpt/images/review.mp4" controls width="100%"></video>
+[![Watch the Review Demo](mysite/migpt/static/migpt/images/int_review.png)](https://github.com/shubh-tripath-i/InterviewStreak/blob/master/mysite/migpt/static/migpt/images/review.mp4)
 
 
 ### Practice UI
