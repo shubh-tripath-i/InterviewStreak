@@ -144,6 +144,7 @@ All environment variables are stored in the provided **`env_sample.sh`** file.
 This file includes keys required for OpenAI and optionally AWS Polly (for text-to-speech support). If AWS credentials are set, questions will be recited in natural speech to give more realistic experience.
 
 For OpenAI API key, you can refer to https://platform.openai.com/docs/quickstart
+
 For AWS Polly credentials, you can refer to https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
 
 #### macOS / Linux
